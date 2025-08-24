@@ -36,9 +36,9 @@ export function FinanceStatsCards() {
     .filter(t => t.tipo === 'receita')
     .reduce((sum, t) => sum + t.valor, 0);
     
-  const monthlyExpenses = Math.abs(thisMonthTransactions
+  const monthlyExpenses = thisMonthTransactions
     .filter(t => t.tipo === 'despesa')
-    .reduce((sum, t) => sum + t.valor, 0));
+    .reduce((sum, t) => sum + t.valor, 0);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
