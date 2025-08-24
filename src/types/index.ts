@@ -5,7 +5,7 @@ export type Task = {
   list_id: string;
   title: string;
   description?: string;
-  status: 'pendente' | 'em_progresso' | 'concluida' | 'cancelada';
+  status: 'pendente' | 'concluida';
   priority: 'baixa' | 'media' | 'alta' | 'urgente';
   tags: string[];
   due_date?: string;
@@ -127,7 +127,7 @@ export type FinanceFilterPreset = {
 
 // App-specific types
 export type Priority = 'baixa' | 'media' | 'alta' | 'urgente';
-export type TaskStatus = 'pendente' | 'em_progresso' | 'concluida' | 'cancelada';
+export type TaskStatus = 'pendente' | 'concluida';
 export type TaskFilters = {
   status: TaskStatus[];
   priority: Priority[];

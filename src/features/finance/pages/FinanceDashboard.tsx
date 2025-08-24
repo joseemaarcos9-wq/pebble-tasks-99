@@ -213,6 +213,7 @@ export function FinanceDashboard() {
           <UpcomingRecurrences maxItems={3} />
         </div>
       </div>
+      </div>
     </div>
   );
 }

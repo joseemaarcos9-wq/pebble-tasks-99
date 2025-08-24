@@ -258,5 +258,6 @@ export function TaskListContainer() {
           onClose={() => setIsTaskDialogOpen(false)}
         />
       </div>
-    );
+    </div>
+  );
 }
