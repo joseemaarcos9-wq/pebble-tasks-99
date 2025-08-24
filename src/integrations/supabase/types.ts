@@ -14,16 +14,491 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      custom_views: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          filters: Json
+          icon: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          filters: Json
+          icon: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          filters?: Json
+          icon?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      finance_accounts: {
+        Row: {
+          arquivada: boolean | null
+          cor: string | null
+          created_at: string | null
+          id: string
+          moeda: string | null
+          nome: string
+          saldo_inicial: number | null
+          tipo: Database["public"]["Enums"]["account_type"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          arquivada?: boolean | null
+          cor?: string | null
+          created_at?: string | null
+          id?: string
+          moeda?: string | null
+          nome: string
+          saldo_inicial?: number | null
+          tipo: Database["public"]["Enums"]["account_type"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          arquivada?: boolean | null
+          cor?: string | null
+          created_at?: string | null
+          id?: string
+          moeda?: string | null
+          nome?: string
+          saldo_inicial?: number | null
+          tipo?: Database["public"]["Enums"]["account_type"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      finance_budgets: {
+        Row: {
+          alert_threshold_pct: number | null
+          categoria_id: string
+          created_at: string | null
+          id: string
+          mes_ano: string
+          updated_at: string | null
+          user_id: string
+          valor_planejado: number
+        }
+        Insert: {
+          alert_threshold_pct?: number | null
+          categoria_id: string
+          created_at?: string | null
+          id?: string
+          mes_ano: string
+          updated_at?: string | null
+          user_id: string
+          valor_planejado: number
+        }
+        Update: {
+          alert_threshold_pct?: number | null
+          categoria_id?: string
+          created_at?: string | null
+          id?: string
+          mes_ano?: string
+          updated_at?: string | null
+          user_id?: string
+          valor_planejado?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_budgets_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "finance_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_categories: {
+        Row: {
+          cor: string | null
+          created_at: string | null
+          id: string
+          nome: string
+          parent_id: string | null
+          tipo: Database["public"]["Enums"]["category_type"]
+          user_id: string
+        }
+        Insert: {
+          cor?: string | null
+          created_at?: string | null
+          id?: string
+          nome: string
+          parent_id?: string | null
+          tipo: Database["public"]["Enums"]["category_type"]
+          user_id: string
+        }
+        Update: {
+          cor?: string | null
+          created_at?: string | null
+          id?: string
+          nome?: string
+          parent_id?: string | null
+          tipo?: Database["public"]["Enums"]["category_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "finance_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_filter_presets: {
+        Row: {
+          created_at: string | null
+          filters: Json
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          filters: Json
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          filters?: Json
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      finance_recurrences: {
+        Row: {
+          ativo: boolean | null
+          categoria_id: string | null
+          conta_id: string
+          created_at: string | null
+          descricao: string | null
+          dia_base: number
+          frequencia: Database["public"]["Enums"]["recurrence_frequency"]
+          id: string
+          proxima_ocorrencia: string
+          tags: string | null
+          tipo: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string | null
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          ativo?: boolean | null
+          categoria_id?: string | null
+          conta_id: string
+          created_at?: string | null
+          descricao?: string | null
+          dia_base: number
+          frequencia: Database["public"]["Enums"]["recurrence_frequency"]
+          id?: string
+          proxima_ocorrencia: string
+          tags?: string | null
+          tipo: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string | null
+          user_id: string
+          valor: number
+        }
+        Update: {
+          ativo?: boolean | null
+          categoria_id?: string | null
+          conta_id?: string
+          created_at?: string | null
+          descricao?: string | null
+          dia_base?: number
+          frequencia?: Database["public"]["Enums"]["recurrence_frequency"]
+          id?: string
+          proxima_ocorrencia?: string
+          tags?: string | null
+          tipo?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string | null
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_recurrences_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "finance_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_recurrences_conta_id_fkey"
+            columns: ["conta_id"]
+            isOneToOne: false
+            referencedRelation: "finance_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          nome: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          nome: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          nome?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      finance_transactions: {
+        Row: {
+          anexo_url: string | null
+          categoria_id: string | null
+          conta_id: string
+          created_at: string | null
+          data: string
+          descricao: string | null
+          id: string
+          meta: Json | null
+          status: Database["public"]["Enums"]["transaction_status"] | null
+          tags: string | null
+          tipo: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string | null
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          anexo_url?: string | null
+          categoria_id?: string | null
+          conta_id: string
+          created_at?: string | null
+          data: string
+          descricao?: string | null
+          id?: string
+          meta?: Json | null
+          status?: Database["public"]["Enums"]["transaction_status"] | null
+          tags?: string | null
+          tipo: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string | null
+          user_id: string
+          valor: number
+        }
+        Update: {
+          anexo_url?: string | null
+          categoria_id?: string | null
+          conta_id?: string
+          created_at?: string | null
+          data?: string
+          descricao?: string | null
+          id?: string
+          meta?: Json | null
+          status?: Database["public"]["Enums"]["transaction_status"] | null
+          tags?: string | null
+          tipo?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string | null
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_transactions_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "finance_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_transactions_conta_id_fkey"
+            columns: ["conta_id"]
+            isOneToOne: false
+            referencedRelation: "finance_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string
+          timezone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          timezone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          timezone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      subtasks: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          id: string
+          task_id: string
+          title: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          task_id: string
+          title: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          task_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subtasks_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_lists: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          link: string | null
+          list_id: string
+          photos: string[] | null
+          priority: Database["public"]["Enums"]["task_priority"] | null
+          status: Database["public"]["Enums"]["task_status"] | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          link?: string | null
+          list_id: string
+          photos?: string[] | null
+          priority?: Database["public"]["Enums"]["task_priority"] | null
+          status?: Database["public"]["Enums"]["task_status"] | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          link?: string | null
+          list_id?: string
+          photos?: string[] | null
+          priority?: Database["public"]["Enums"]["task_priority"] | null
+          status?: Database["public"]["Enums"]["task_status"] | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "task_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      setup_user_defaults: {
+        Args: { user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      account_type: "carteira" | "banco" | "cartao"
+      category_type: "despesa" | "receita"
+      recurrence_frequency: "mensal" | "semanal" | "anual" | "custom"
+      task_priority: "baixa" | "media" | "alta" | "urgente"
+      task_status: "pendente" | "concluida"
+      transaction_status: "pendente" | "compensada"
+      transaction_type: "despesa" | "receita" | "transferencia"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +625,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      account_type: ["carteira", "banco", "cartao"],
+      category_type: ["despesa", "receita"],
+      recurrence_frequency: ["mensal", "semanal", "anual", "custom"],
+      task_priority: ["baixa", "media", "alta", "urgente"],
+      task_status: ["pendente", "concluida"],
+      transaction_status: ["pendente", "compensada"],
+      transaction_type: ["despesa", "receita", "transferencia"],
+    },
   },
 } as const
