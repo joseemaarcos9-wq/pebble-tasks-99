@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useFinanceStore } from '@/features/finance/store';
+import { useData } from '@/components/providers/DataProvider';
 import { AccountType } from '@/features/finance/types';
 
 const accountSchema = z.object({
@@ -55,7 +55,8 @@ const accountColors = [
 ];
 
 export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
-  const { createAccount } = useFinanceStore();
+  const { finance } = useData();
+  const { addAccount } = finance;
   const [selectedColor, setSelectedColor] = useState(accountColors[0]);
 
   const form = useForm<AccountFormValues>({
@@ -69,10 +70,10 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
   });
 
   const onSubmit = (values: AccountFormValues) => {
-    createAccount({
+    addAccount({
       nome: values.nome,
       tipo: values.tipo,
-      saldoInicial: values.saldoInicial,
+      saldo_inicial: values.saldoInicial,
       cor: selectedColor,
       moeda: 'BRL',
     });

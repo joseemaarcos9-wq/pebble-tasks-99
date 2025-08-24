@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useTaskStore } from '@/store/useTaskStore';
+import { useData } from '@/components/providers/DataProvider';
 import { toast } from '@/hooks/use-toast';
 
 interface ListDialogProps {
@@ -32,7 +32,8 @@ const colorOptions = [
 export function ListDialog({ isOpen, onClose, editingListId }: ListDialogProps) {
   const [name, setName] = useState('');
   const [selectedColor, setSelectedColor] = useState(colorOptions[0].value);
-  const { addList, updateList, lists } = useTaskStore();
+  const { tasks } = useData();
+  const { addList, updateList, lists } = tasks;
   
   // Get editing list data
   const editingList = editingListId ? lists.find(list => list.id === editingListId) : null;

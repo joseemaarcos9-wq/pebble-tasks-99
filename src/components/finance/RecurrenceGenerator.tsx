@@ -10,7 +10,7 @@ import {
   ChevronRight,
   Zap
 } from 'lucide-react';
-import { useFinanceStore } from '@/features/finance/store';
+import { useData } from '@/components/providers/DataProvider';
 import { formatCurrency, formatDate } from '@/features/finance/utils/formatters';
 import { format, addDays, isToday, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -25,13 +25,14 @@ export function RecurrenceGenerator({
   className = "",
   compact = false 
 }: RecurrenceGeneratorProps) {
-  const { 
+  const { finance } = useData();
+  const {
     recurrences, 
     accounts, 
     generateRecurrenceTransactions,
     generateMonthRecurrences,
     transactions 
-  } = useFinanceStore();
+  } = finance;
   
   const [isGenerating, setIsGenerating] = useState(false);
 

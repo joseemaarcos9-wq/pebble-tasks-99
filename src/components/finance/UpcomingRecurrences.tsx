@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Play, Clock, ArrowRight } from 'lucide-react';
-import { useFinanceStore } from '@/features/finance/store';
+import { useData } from '@/components/providers/DataProvider';
 import { formatCurrency, formatDate } from '@/features/finance/utils/formatters';
 import { useUiStore } from '@/features/ui/store';
 import { format, addDays, isToday, isTomorrow, isThisWeek } from 'date-fns';

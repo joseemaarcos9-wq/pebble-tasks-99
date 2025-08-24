@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useTaskStore } from '@/store/useTaskStore';
+import { useData } from '@/components/providers/DataProvider';
 import { Task, Priority } from '@/store/types';
 import { format } from 'date-fns';
 import { CalendarIcon, Plus, X, Link as LinkIcon, Camera, Upload } from 'lucide-react';
@@ -35,7 +35,8 @@ interface TaskDialogProps {
 }
 
 export function TaskDialog({ isOpen, onClose, task }: TaskDialogProps) {
-  const { addTask, updateTask, lists } = useTaskStore();
+  const { tasks } = useData();
+  const { addTask, updateTask, lists } = tasks;
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [subtasks, setSubtasks] = useState<{ id: string; title: string; completed: boolean }[]>([]);
