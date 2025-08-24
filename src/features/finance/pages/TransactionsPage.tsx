@@ -22,29 +22,40 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Plus, Search, Filter, Download, Edit, Trash2, ChevronDown, X, Calendar } from 'lucide-react';
-import { useFinanceStore } from '../store';
+import { useData } from '@/components/providers/DataProvider';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { format } from 'date-fns';
-import { useInitializeFinanceData } from '../hooks/useInitializeFinanceData';
 import { TransactionDialog } from '@/components/finance/TransactionDialog';
 import { toast } from '@/hooks/use-toast';
 
 export function TransactionsPage() {
-  useInitializeFinanceData();
   const { 
-    getFilteredTransactions, 
-    accounts, 
-    categories, 
-    deleteTransaction, 
-    toggleTransactionStatus, 
-    exportTransactionsCSV,
-    currentFilters,
-    setFilters,
-    clearFilters
-  } = useFinanceStore();
+    finance: {
+      getFilteredTransactions, 
+      accounts, 
+      categories, 
+      deleteTransaction, 
+      filters,
+      setFilters,
+      clearFilters,
+      loading
+    }
+  } = useData();
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const transactions = getFilteredTransactions();
+  
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent mx-auto" />
+          <p className="text-muted-foreground">Carregando transações...</p>
+        </div>
+      </div>
+    );
+  }
 
   const getAccountName = (accountId: string) => {
     return accounts.find(a => a.id === accountId)?.nome || 'Conta desconhecida';
@@ -55,31 +66,12 @@ export function TransactionsPage() {
   };
 
   const handleExportCSV = () => {
-    try {
-      const csvContent = exportTransactionsCSV(transactions);
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `transacoes_${format(new Date(), 'yyyy-MM-dd')}.csv`);
-      link.style.visibility = 'hidden';
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      toast({
-        title: "Exportação concluída!",
-        description: `${transactions.length} transações exportadas para CSV.`
-      });
-    } catch (error) {
-      toast({
-        title: "Erro na exportação",
-        description: "Ocorreu um erro ao exportar as transações.",
-        variant: "destructive"
-      });
-    }
+    // TODO: Implementar exportação CSV
+    toast({
+      title: "Exportação não implementada",
+      description: "Funcionalidade em desenvolvimento.",
+      variant: "destructive"
+    });
   };
 
   const handleSearchChange = (value: string) => {
@@ -95,7 +87,7 @@ export function TransactionsPage() {
   };
 
   const handleAccountFilter = (accountId: string, checked: boolean) => {
-    const currentAccountIds = currentFilters.accountIds;
+    const currentAccountIds = filters.accountIds;
     if (checked) {
       setFilters({ accountIds: [...currentAccountIds, accountId] });
     } else {
@@ -104,7 +96,7 @@ export function TransactionsPage() {
   };
 
   const handleTypeFilter = (type: string, checked: boolean) => {
-    const currentTypes = currentFilters.types;
+    const currentTypes = filters.types;
     if (checked) {
       setFilters({ types: [...currentTypes, type as any] });
     } else {
@@ -113,7 +105,7 @@ export function TransactionsPage() {
   };
 
   const handleStatusFilter = (status: string, checked: boolean) => {
-    const currentStatus = currentFilters.status;
+    const currentStatus = filters.status;
     if (checked) {
       setFilters({ status: [...currentStatus, status as any] });
     } else {
@@ -122,7 +114,7 @@ export function TransactionsPage() {
   };
 
   const handleCategoryFilter = (categoryId: string, checked: boolean) => {
-    const currentCategoryIds = currentFilters.categoryIds;
+    const currentCategoryIds = filters.categoryIds;
     if (checked) {
       setFilters({ categoryIds: [...currentCategoryIds, categoryId] });
     } else {
@@ -136,12 +128,12 @@ export function TransactionsPage() {
   };
 
   const hasActiveFilters = 
-    currentFilters.search || 
-    currentFilters.period ||
-    currentFilters.accountIds.length > 0 ||
-    currentFilters.types.length > 0 ||
-    currentFilters.status.length > 0 ||
-    currentFilters.categoryIds.length > 0;
+    filters.search || 
+    filters.period ||
+    filters.accountIds.length > 0 ||
+    filters.types.length > 0 ||
+    filters.status.length > 0 ||
+    filters.categoryIds.length > 0;
 
   return (
     <div data-testid="tx-table" className="space-y-6">
@@ -192,13 +184,13 @@ export function TransactionsPage() {
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Buscar transações..."
-                    value={currentFilters.search}
+                    value={filters.search}
                     onChange={(e) => handleSearchChange(e.target.value)}
                     className="pl-9"
                   />
                 </div>
               </div>
-              <Select value={currentFilters.period || 'all'} onValueChange={handlePeriodChange}>
+              <Select value={filters.period || 'all'} onValueChange={handlePeriodChange}>
                 <SelectTrigger className="w-48">
                   <Calendar className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Período" />
@@ -211,114 +203,14 @@ export function TransactionsPage() {
                   <SelectItem value="last-month">Mês passado</SelectItem>
                 </SelectContent>
               </Select>
-              <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
-                <CollapsibleTrigger asChild>
-                  <Button variant="outline">
-                    <Filter className="h-4 w-4 mr-2" />
-                    Mais Filtros
-                    <ChevronDown className="h-4 w-4 ml-2" />
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-6 p-4 border rounded-lg bg-muted/30">
-                    {/* Contas */}
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium">Contas</Label>
-                      <div className="space-y-2">
-                        {accounts.map((account) => (
-                          <div key={account.id} className="flex items-center space-x-2">
-                            <Checkbox 
-                              id={`account-${account.id}`}
-                              checked={currentFilters.accountIds.includes(account.id)}
-                              onCheckedChange={(checked) => handleAccountFilter(account.id, !!checked)}
-                            />
-                            <Label 
-                              htmlFor={`account-${account.id}`} 
-                              className="text-sm text-foreground cursor-pointer"
-                            >
-                              {account.nome}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Tipos */}
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium">Tipos</Label>
-                      <div className="space-y-2">
-                        {['receita', 'despesa', 'transferencia'].map((type) => (
-                          <div key={type} className="flex items-center space-x-2">
-                            <Checkbox 
-                              id={`type-${type}`}
-                              checked={currentFilters.types.includes(type as any)}
-                              onCheckedChange={(checked) => handleTypeFilter(type, !!checked)}
-                            />
-                            <Label 
-                              htmlFor={`type-${type}`} 
-                              className="text-sm text-foreground cursor-pointer capitalize"
-                            >
-                              {type}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Status */}
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium">Status</Label>
-                      <div className="space-y-2">
-                        {['pendente', 'compensada'].map((status) => (
-                          <div key={status} className="flex items-center space-x-2">
-                            <Checkbox 
-                              id={`status-${status}`}
-                              checked={currentFilters.status.includes(status as any)}
-                              onCheckedChange={(checked) => handleStatusFilter(status, !!checked)}
-                            />
-                            <Label 
-                              htmlFor={`status-${status}`} 
-                              className="text-sm text-foreground cursor-pointer capitalize"
-                            >
-                              {status}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Categorias */}
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium">Categorias</Label>
-                      <div className="space-y-2 max-h-32 overflow-y-auto">
-                        {categories.map((category) => (
-                          <div key={category.id} className="flex items-center space-x-2">
-                            <Checkbox 
-                              id={`category-${category.id}`}
-                              checked={currentFilters.categoryIds.includes(category.id)}
-                              onCheckedChange={(checked) => handleCategoryFilter(category.id, !!checked)}
-                            />
-                            <Label 
-                              htmlFor={`category-${category.id}`} 
-                              className="text-sm text-foreground cursor-pointer"
-                            >
-                              {category.nome}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
             </div>
 
             {/* Filtros ativos */}
             {hasActiveFilters && (
               <div className="flex flex-wrap gap-2">
-                {currentFilters.search && (
+                {filters.search && (
                   <Badge variant="secondary" className="px-2 py-1">
-                    Busca: "{currentFilters.search}"
+                    Busca: "{filters.search}"
                     <Button 
                       variant="ghost" 
                       size="sm" 
@@ -329,12 +221,9 @@ export function TransactionsPage() {
                     </Button>
                   </Badge>
                 )}
-                {currentFilters.period && (
+                {filters.period && (
                   <Badge variant="secondary" className="px-2 py-1">
-                    {currentFilters.period === 'today' && 'Hoje'}
-                    {currentFilters.period === 'this-week' && 'Esta semana'}
-                    {currentFilters.period === 'this-month' && 'Este mês'}
-                    {currentFilters.period === 'last-month' && 'Mês passado'}
+                    Período: {filters.period}
                     <Button 
                       variant="ghost" 
                       size="sm" 
@@ -345,48 +234,6 @@ export function TransactionsPage() {
                     </Button>
                   </Badge>
                 )}
-                {currentFilters.accountIds.map(accountId => {
-                  const account = accounts.find(a => a.id === accountId);
-                  return account ? (
-                    <Badge key={accountId} variant="secondary" className="px-2 py-1">
-                      {account.nome}
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-auto p-0 ml-1"
-                        onClick={() => handleAccountFilter(accountId, false)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </Badge>
-                  ) : null;
-                })}
-                {currentFilters.types.map(type => (
-                  <Badge key={type} variant="secondary" className="px-2 py-1 capitalize">
-                    {type}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-auto p-0 ml-1"
-                      onClick={() => handleTypeFilter(type, false)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-                {currentFilters.status.map(status => (
-                  <Badge key={status} variant="secondary" className="px-2 py-1 capitalize">
-                    {status}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-auto p-0 ml-1"
-                      onClick={() => handleStatusFilter(status, false)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
               </div>
             )}
           </div>
@@ -420,7 +267,7 @@ export function TransactionsPage() {
                 transactions.map((transaction) => (
                     <TableRow key={transaction.id}>
                       <TableCell>{formatDate(transaction.data)}</TableCell>
-                      <TableCell>{getAccountName(transaction.contaId)}</TableCell>
+                      <TableCell>{getAccountName(transaction.conta_id)}</TableCell>
                       <TableCell>
                         <Badge variant={
                           transaction.tipo === 'receita' ? 'default' : 
@@ -430,7 +277,7 @@ export function TransactionsPage() {
                           {transaction.tipo}
                         </Badge>
                       </TableCell>
-                      <TableCell>{getCategoryName(transaction.categoriaId)}</TableCell>
+                      <TableCell>{getCategoryName(transaction.categoria_id)}</TableCell>
                       <TableCell className="max-w-[200px] truncate">
                         {transaction.descricao || '-'}
                       </TableCell>
@@ -443,7 +290,6 @@ export function TransactionsPage() {
                         <Badge 
                           variant={transaction.status === 'compensada' ? 'default' : 'secondary'}
                           className="cursor-pointer"
-                          onClick={() => toggleTransactionStatus(transaction.id)}
                         >
                           {transaction.status}
                         </Badge>

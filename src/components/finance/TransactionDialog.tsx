@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { useFinanceStore } from '@/features/finance/store';
+import { useData } from '@/components/providers/DataProvider';
 import { TransactionType } from '@/features/finance/types';
 import { format } from 'date-fns';
 
@@ -53,7 +53,7 @@ interface TransactionDialogProps {
 }
 
 export function TransactionDialog({ open, onOpenChange }: TransactionDialogProps) {
-  const { createTransaction, accounts, categories } = useFinanceStore();
+  const { finance: { addTransaction, accounts, categories } } = useData();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const form = useForm<TransactionFormData>({
@@ -65,18 +65,20 @@ export function TransactionDialog({ open, onOpenChange }: TransactionDialogProps
     },
   });
 
-  const onSubmit = (data: TransactionFormData) => {
+  const onSubmit = async (data: TransactionFormData) => {
     const valor = Number(data.valor.replace(',', '.'));
     
-    createTransaction({
+    await addTransaction({
       data: data.data,
-      contaId: data.contaId,
+      conta_id: data.contaId,
       valor: data.tipo === 'despesa' ? -valor : valor,
       tipo: data.tipo,
-      categoriaId: data.categoriaId,
-      descricao: data.descricao,
+      categoria_id: data.categoriaId,
+      descricao: data.descricao || null,
       tags: selectedTags.join(', '),
       status: 'pendente',
+      anexo_url: null,
+      meta: null,
     });
 
     form.reset();

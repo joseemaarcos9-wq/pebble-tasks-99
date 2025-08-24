@@ -10,9 +10,8 @@ import {
   Plus,
   ArrowRight
 } from 'lucide-react';
-import { useFinanceStore } from '../store';
+import { useData } from '@/components/providers/DataProvider';
 import { formatCurrency } from '../utils/formatters';
-import { useInitializeFinanceData } from '../hooks/useInitializeFinanceData';
 import { useUiStore } from '@/features/ui/store';
 import { UpcomingRecurrences } from '@/components/finance/UpcomingRecurrences';
 import { FinanceStatsCards } from '@/components/finance/FinanceStatsCards';
@@ -20,12 +19,23 @@ import { RecurrenceGenerator } from '@/components/finance/RecurrenceGenerator';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 
 export function FinanceDashboard() {
-  useInitializeFinanceData();
-  const { getDashboardData, accounts, getAccountBalance } = useFinanceStore();
+  const { finance: { accounts, getAccountBalance, transactions, loading } } = useData();
   const { go } = useUiStore();
-  const dashboardData = getDashboardData();
 
-  // Dados simulados para os gráficos
+  
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent mx-auto" />
+          <p className="text-muted-foreground">Carregando dados financeiros...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Dados simulados para os gráficos (TODO: Substituir por dados reais)
   const dailyBalanceData = [
     { date: '01/12', balance: 3700 },
     { date: '02/12', balance: 3650 },

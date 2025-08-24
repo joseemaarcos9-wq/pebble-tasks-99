@@ -2,16 +2,25 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useFinanceStore } from '../store';
+import { useData } from '@/components/providers/DataProvider';
 import { formatCurrency } from '../utils/formatters';
-import { useInitializeFinanceData } from '../hooks/useInitializeFinanceData';
 import { Plus, CreditCard, Wallet, DollarSign } from 'lucide-react';
 import { AccountDialog } from '@/components/finance/AccountDialog';
 
 export function FinanceAccounts() {
-  useInitializeFinanceData();
-  const { accounts, getAccountBalance, getTotalBalance } = useFinanceStore();
+  const { finance: { accounts, getAccountBalance, getTotalBalance, loading } } = useData();
   const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false);
+  
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent mx-auto" />
+          <p className="text-muted-foreground">Carregando contas...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -63,7 +72,7 @@ export function FinanceAccounts() {
                   </div>
                   <div className="text-right">
                     <div className="text-xl font-semibold">
-                      {formatCurrency(balance.saldoAtual)}
+                      {formatCurrency(balance)}
                     </div>
                     <Badge variant="outline">{account.moeda}</Badge>
                   </div>
