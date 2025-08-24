@@ -398,7 +398,7 @@ export function useFinance() {
     
     const despesas = accountTransactions
       .filter(t => t.tipo === 'despesa')
-      .reduce((sum, t) => sum + t.valor, 0);
+      .reduce((sum, t) => sum + Math.abs(t.valor), 0); // Use Math.abs para garantir valor positivo
 
     return account.saldo_inicial + receitas - despesas;
   }, [accounts, transactions]);
