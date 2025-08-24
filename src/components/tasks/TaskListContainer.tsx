@@ -1,7 +1,7 @@
 import { TaskList } from './TaskList';
 import { EmptyState } from './EmptyState';
 import { TaskDialog } from './TaskDialog';
-import { useTaskStore } from '@/store/useTaskStore';
+import { useData } from '@/components/providers/DataProvider';
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,12 +16,15 @@ import { TaskStats } from './TaskStats';
  */
 export function TaskListContainer() {
   const { 
-    getFilteredTasks, 
-    filters, 
-    setFilters, 
-    clearFilters,
-    lists 
-  } = useTaskStore();
+    tasks: {
+      getFilteredTasks, 
+      filters, 
+      setFilters, 
+      clearFilters,
+      lists,
+      loading
+    }
+  } = useData();
   const { toast } = useToast();
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
   
@@ -39,6 +42,18 @@ export function TaskListContainer() {
     const interval = setInterval(checkTrigger, 100);
     return () => clearInterval(interval);
   }, []);
+  
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent mx-auto" />
+          <p className="text-muted-foreground">Carregando tarefas...</p>
+        </div>
+      </div>
+    );
+  }
   
   const filteredTasks = getFilteredTasks();
   const hasActiveFilters = filters.search || 
