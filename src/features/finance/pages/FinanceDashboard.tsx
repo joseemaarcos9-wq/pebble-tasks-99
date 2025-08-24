@@ -14,6 +14,7 @@ import { useData } from '@/components/providers/DataProvider';
 import { formatCurrency } from '../utils/formatters';
 import { useUiStore } from '@/features/ui/store';
 import { UpcomingRecurrences } from '@/components/finance/UpcomingRecurrences';
+import { QuickActions } from '@/components/QuickActions';
 import { FinanceStatsCards } from '@/components/finance/FinanceStatsCards';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
@@ -72,7 +73,10 @@ export function FinanceDashboard() {
   ];
 
   return (
-    <div data-testid="finance-dashboard" className="space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
+      <QuickActions />
+      
+      <div data-testid="finance-dashboard" className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

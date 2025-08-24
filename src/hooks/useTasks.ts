@@ -19,7 +19,7 @@ export interface Task {
   title: string;
   description: string | null;
   priority: 'baixa' | 'media' | 'alta' | 'urgente';
-  status: 'pendente' | 'concluida';
+  status: 'pendente' | 'em_progresso' | 'concluida' | 'cancelada';
   tags: string[];
   due_date: string | null;
   completed_at: string | null;

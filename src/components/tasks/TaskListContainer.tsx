@@ -1,8 +1,8 @@
+import { useState, useEffect } from 'react';
 import { TaskList } from './TaskList';
-
+import { SimpleTaskDialog } from './SimpleTaskDialog';
 
 import { useData } from '@/components/providers/DataProvider';
-import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { X, Plus } from 'lucide-react';
@@ -187,6 +187,11 @@ export function TaskListContainer() {
             </Button>
           </div>
         </div>
+
+        <SimpleTaskDialog
+          isOpen={isTaskDialogOpen}
+          onClose={() => setIsTaskDialogOpen(false)}
+        />
       </div>
     );
   }
@@ -247,7 +252,11 @@ export function TaskListContainer() {
             <TaskList />
           </div>
         </div>
+
+        <SimpleTaskDialog
+          isOpen={isTaskDialogOpen}
+          onClose={() => setIsTaskDialogOpen(false)}
+        />
       </div>
-    </div>
-  );
+    );
 }
