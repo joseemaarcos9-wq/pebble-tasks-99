@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTaskStore } from '@/store/useTaskStore';
+import { useData } from '@/components/providers/DataProvider';
 import { TaskItem } from './TaskItem';
 import { TaskDialog } from './TaskDialog';
 import { TaskViewDialog } from './TaskViewDialog';
@@ -9,12 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { List, Columns } from 'lucide-react';
-import { Task } from '@/store/types';
+import { Task } from '@/hooks/useTasks';
+import { adaptTaskToOld } from '@/utils/taskAdapters';
 import { format, isToday, isPast, isTomorrow, isThisWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export function TaskList() {
-  const { getFilteredTasks, filters } = useTaskStore();
+  const { tasks: { getFilteredTasks, filters } } = useData();
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
   const [isTaskViewOpen, setIsTaskViewOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>();
@@ -34,12 +35,12 @@ export function TaskList() {
     };
 
     tasks.forEach((task) => {
-      if (!task.dueDate) {
+      if (!task.due_date) {
         groups['Sem Prazo'].push(task);
         return;
       }
 
-      const dueDate = new Date(task.dueDate);
+      const dueDate = new Date(task.due_date);
       
       if (isPast(dueDate) && !isToday(dueDate)) {
         groups['Atrasadas'].push(task);
@@ -56,7 +57,7 @@ export function TaskList() {
 
     return Object.entries(groups).filter(([_, tasks]) => tasks.length > 0);
   };
-
+  
   const handleEditTask = (task: Task) => {
     setEditingTask(task);
     setIsTaskDialogOpen(true);
@@ -144,7 +145,7 @@ export function TaskList() {
           </TabsContent>
           
           <TabsContent value="kanban" className="mt-6">
-            <KanbanView onViewTask={handleViewTask} />
+            <KanbanView onViewTask={(task: any) => handleViewTask(task)} />
           </TabsContent>
         </Tabs>
       </div>
@@ -152,14 +153,14 @@ export function TaskList() {
       <TaskDialog
         isOpen={isTaskDialogOpen}
         onClose={handleCloseDialog}
-        task={editingTask}
+        task={editingTask ? adaptTaskToOld(editingTask) : undefined}
       />
       
       <TaskViewDialog
         isOpen={isTaskViewOpen}
         onClose={handleCloseViewDialog}
         onEdit={handleEditFromView}
-        task={viewingTask}
+        task={viewingTask ? adaptTaskToOld(viewingTask) : undefined}
       />
     </>
   );

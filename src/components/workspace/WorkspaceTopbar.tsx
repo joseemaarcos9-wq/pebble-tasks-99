@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkspaceKeyboardShortcuts } from '@/hooks/useWorkspaceKeyboardShortcuts';
-import { useTaskStore } from '@/store/useTaskStore';
+import { useData } from '@/components/providers/DataProvider';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -35,7 +35,7 @@ export function WorkspaceTopbar() {
   const { section, history, back, go } = useUiStore();
   const { theme, setTheme } = useTheme();
   const { keySequence } = useWorkspaceKeyboardShortcuts();
-  const { getFilteredTasks, filters } = useTaskStore();
+  const { tasks: { getFilteredTasks, filters } } = useData();
   const { user, signOut } = useAuth();
   const [commandOpen, setCommandOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');

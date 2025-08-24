@@ -245,7 +245,7 @@ export function useTasks() {
         description: error.message,
         variant: "destructive",
       });
-      return { error };
+    return { error };
     }
   }, [user]);
 
@@ -294,6 +294,96 @@ export function useTasks() {
     } catch (error: any) {
       toast({
         title: "Erro ao excluir lista",
+        description: error.message,
+        variant: "destructive",
+      });
+      return { error };
+    }
+  }, []);
+
+  // Custom view operations
+  const addCustomView = useCallback(async (name: string, icon: string, filters: TaskFilters, color?: string) => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('custom_views')
+        .insert({
+          name,
+          icon,
+          color,
+          filters: filters as any, // Cast to any for JSONB compatibility
+          user_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setCustomViews(prev => [...prev, data]);
+      toast({
+        title: "Visualização criada!",
+        description: `"${data.name}" foi adicionada.`,
+      });
+
+      return { data, error: null };
+    } catch (error: any) {
+      toast({
+        title: "Erro ao criar visualização",
+        description: error.message,
+        variant: "destructive",
+      });
+      return { error };
+    }
+  }, [user]);
+
+  const updateCustomView = useCallback(async (id: string, updates: Partial<CustomView>) => {
+    try {
+      const { data, error } = await supabase
+        .from('custom_views')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setCustomViews(prev => prev.map(view => view.id === id ? data : view));
+      toast({
+        title: "Visualização atualizada!",
+        description: "As alterações foram salvas.",
+      });
+
+      return { data, error: null };
+    } catch (error: any) {
+      toast({
+        title: "Erro ao atualizar visualização",
+        description: error.message,
+        variant: "destructive",
+      });
+      return { error };
+    }
+  }, []);
+
+  const deleteCustomView = useCallback(async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('custom_views')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setCustomViews(prev => prev.filter(view => view.id !== id));
+      toast({
+        title: "Visualização excluída",
+        description: "A visualização foi removida.",
+      });
+
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: "Erro ao excluir visualização",
         description: error.message,
         variant: "destructive",
       });
@@ -536,6 +626,11 @@ export function useTasks() {
     addList,
     updateList,
     deleteList,
+
+    // Custom view operations
+    addCustomView,
+    updateCustomView,
+    deleteCustomView,
 
     // Subtask operations
     addSubtask,

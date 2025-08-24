@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useTaskStore } from '@/store/useTaskStore';
+import { useData } from '@/components/providers/DataProvider';
 import { ListDialog } from './ListDialog';
 import { CustomViewDialog } from './CustomViewDialog';
 import { 
@@ -53,23 +53,49 @@ export function TaskSidebar() {
   const [editingList, setEditingList] = useState<string | null>(null);
   const [editingCustomView, setEditingCustomView] = useState<string | null>(null);
   const { 
-    filters, 
-    setFilters, 
-    lists, 
-    customViews,
-    getTasksByList, 
-    getOverdueTasks, 
-    getTodayTasks,
-    getWeekTasks,
-    getAllTags,
-    getFilteredTasks,
-    deleteList,
-    deleteCustomView
-  } = useTaskStore();
+    tasks: {
+      filters, 
+      setFilters, 
+      lists, 
+      customViews,
+      getTasksByList, 
+      tasks,
+      getAllTags,
+      getFilteredTasks,
+      deleteList,
+      deleteCustomView
+    }
+  } = useData();
 
-  const overdueTasks = getOverdueTasks();
-  const todayTasks = getTodayTasks();
-  const weekTasks = getWeekTasks();
+  // Calculate task counts
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const overdueTasks = tasks.filter(
+    (task) =>
+      task.status === 'pendente' &&
+      task.due_date &&
+      new Date(task.due_date) < today
+  );
+  
+  const todayTasks = tasks.filter(
+    (task) =>
+      task.status === 'pendente' &&
+      task.due_date &&
+      new Date(task.due_date).toDateString() === today.toDateString()
+  );
+  
+  const weekFromNow = new Date(today);
+  weekFromNow.setDate(weekFromNow.getDate() + 7);
+  
+  const weekTasks = tasks.filter(
+    (task) =>
+      task.status === 'pendente' &&
+      task.due_date &&
+      new Date(task.due_date) >= today &&
+      new Date(task.due_date) <= weekFromNow
+  );
+  
   const allTags = getAllTags();
 
   const isActive = (condition: boolean) => condition ? 'bg-accent text-accent-foreground' : '';
@@ -253,7 +279,7 @@ export function TaskSidebar() {
                   }
                   
                   if (view.filters.listId) {
-                    matches = matches && task.listId === view.filters.listId;
+                    matches = matches && task.list_id === view.filters.listId;
                   }
                   
                   if (view.filters.priority) {

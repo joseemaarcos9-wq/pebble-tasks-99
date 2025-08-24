@@ -1,22 +1,47 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useTaskStore } from '@/store/useTaskStore';
+import { useData } from '@/components/providers/DataProvider';
 import { CalendarDays, AlertTriangle, Clock, List } from 'lucide-react';
 
 export function QuickFilters() {
   const { 
-    filters, 
-    setFilters, 
-    getOverdueTasks, 
-    getTodayTasks, 
-    getWeekTasks,
-    lists
-  } = useTaskStore();
+    tasks: {
+      filters, 
+      setFilters, 
+      tasks,
+      lists
+    }
+  } = useData();
   
-  const overdueTasks = getOverdueTasks();
-  const todayTasks = getTodayTasks();
-  const weekTasks = getWeekTasks();
+  // Calculate quick filter counts
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const overdueTasks = tasks.filter(
+    (task) =>
+      task.status === 'pendente' &&
+      task.due_date &&
+      new Date(task.due_date) < today
+  );
+  
+  const todayTasks = tasks.filter(
+    (task) =>
+      task.status === 'pendente' &&
+      task.due_date &&
+      new Date(task.due_date).toDateString() === today.toDateString()
+  );
+  
+  const weekFromNow = new Date(today);
+  weekFromNow.setDate(weekFromNow.getDate() + 7);
+  
+  const weekTasks = tasks.filter(
+    (task) =>
+      task.status === 'pendente' &&
+      task.due_date &&
+      new Date(task.due_date) >= today &&
+      new Date(task.due_date) <= weekFromNow
+  );
 
   const hasQuickFilters = overdueTasks.length > 0 || todayTasks.length > 0 || weekTasks.length > 0;
   const hasLists = lists.length > 0;

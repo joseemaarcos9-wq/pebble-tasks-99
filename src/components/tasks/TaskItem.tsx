@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useTaskStore } from '@/store/useTaskStore';
-import { Task } from '@/store/types';
+import { useData } from '@/components/providers/DataProvider';
+import { Task } from '@/hooks/useTasks';
 import { format, isToday, isPast, isTomorrow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { 
@@ -35,7 +35,7 @@ interface TaskItemProps {
 }
 
 export function TaskItem({ task, onEdit, onView }: TaskItemProps) {
-  const { toggleTaskStatus, deleteTask, duplicateTask, moveTask, lists, preferences, toggleSubtask } = useTaskStore();
+  const { tasks: { toggleTaskStatus, deleteTask, lists, subtasks } } = useData();
   const [isDeleting, setIsDeleting] = useState(false);
 
   /**
@@ -62,15 +62,17 @@ export function TaskItem({ task, onEdit, onView }: TaskItemProps) {
    * Duplica a tarefa atual
    */
   const handleDuplicate = () => {
-    duplicateTask(task.id);
+    // TODO: Implementar duplicação
+    console.log('Duplicar tarefa:', task.id);
   };
 
   /**
    * Move a tarefa para uma lista diferente
    */
   const handleMoveToList = (listId: string) => {
-    if (listId !== task.listId) {
-      moveTask(task.id, listId);
+    if (listId !== task.list_id) {
+      // TODO: Implementar movimentação
+      console.log('Mover tarefa:', task.id, 'para lista:', listId);
     }
   };
 
@@ -127,9 +129,9 @@ export function TaskItem({ task, onEdit, onView }: TaskItemProps) {
    */
 
   const getDateBadge = () => {
-    if (!task.dueDate) return null;
+    if (!task.due_date) return null;
 
-    const dueDate = new Date(task.dueDate);
+    const dueDate = new Date(task.due_date);
     const isOverdue = isPast(dueDate) && !isToday(dueDate);
     
     let label = format(dueDate, 'dd/MM', { locale: ptBR });
@@ -155,11 +157,12 @@ export function TaskItem({ task, onEdit, onView }: TaskItemProps) {
   };
 
   // Dados computados para exibição
-  const list = lists.find(l => l.id === task.listId);
-  const completedSubtasks = task.subtasks.filter(st => st.completed).length;
-  const totalSubtasks = task.subtasks.length;
+  const list = lists.find(l => l.id === task.list_id);
+  const taskSubtasks = subtasks.filter(st => st.task_id === task.id);
+  const completedSubtasks = taskSubtasks.filter(st => st.completed).length;
+  const totalSubtasks = taskSubtasks.length;
   const hasSubtasks = totalSubtasks > 0;
-  const isCompactMode = preferences.density === 'compact';
+  const isCompactMode = false; // TODO: Implementar preferências
 
   return (
     <motion.div
@@ -258,8 +261,8 @@ export function TaskItem({ task, onEdit, onView }: TaskItemProps) {
                       <Move className="h-4 w-4 mr-2" />
                       Mover para
                       <div className="absolute left-full top-0 ml-1 bg-popover border rounded-md shadow-md hidden group-hover:block">
-                        {lists
-                          .filter(l => l.id !== task.listId)
+                         {lists
+                           .filter(l => l.id !== task.list_id)
                           .map(targetList => (
                             <button
                               key={targetList.id}
@@ -386,11 +389,14 @@ export function TaskItem({ task, onEdit, onView }: TaskItemProps) {
           {/* Subtarefas como checklist */}
           {hasSubtasks && !isCompactMode && (
             <div className="mt-3 space-y-1">
-              {task.subtasks.slice(0, 3).map((subtask) => (
+              {taskSubtasks.slice(0, 3).map((subtask) => (
                 <div key={subtask.id} className="flex items-center space-x-2">
                   <Checkbox
                     checked={subtask.completed}
-                    onCheckedChange={() => toggleSubtask(task.id, subtask.id)}
+                    onCheckedChange={() => {
+                      // TODO: Implementar toggle de subtarefa
+                      console.log('Toggle subtarefa:', subtask.id);
+                    }}
                     className="h-3 w-3"
                   />
                   <span 
@@ -405,9 +411,9 @@ export function TaskItem({ task, onEdit, onView }: TaskItemProps) {
                   </span>
                 </div>
               ))}
-              {task.subtasks.length > 3 && (
+              {taskSubtasks.length > 3 && (
                 <div className="text-xs text-muted-foreground pl-5">
-                  +{task.subtasks.length - 3} mais subtarefas
+                  +{taskSubtasks.length - 3} mais subtarefas
                 </div>
               )}
             </div>
