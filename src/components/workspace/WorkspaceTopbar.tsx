@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Moon, Sun, Monitor } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, Monitor, LogOut, User } from 'lucide-react';
 import { useUiStore, Section } from '@/features/ui/store';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkspaceKeyboardShortcuts } from '@/hooks/useWorkspaceKeyboardShortcuts';
 import { useTaskStore } from '@/store/useTaskStore';
+import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { CommandMenu } from './CommandMenu';
@@ -33,6 +36,7 @@ export function WorkspaceTopbar() {
   const { theme, setTheme } = useTheme();
   const { keySequence } = useWorkspaceKeyboardShortcuts();
   const { getFilteredTasks, filters } = useTaskStore();
+  const { user, signOut } = useAuth();
   const [commandOpen, setCommandOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [newTaskOpen, setNewTaskOpen] = useState(false);
@@ -177,6 +181,53 @@ export function WorkspaceTopbar() {
               <DropdownMenuItem onClick={() => setTheme('auto')}>
                 <Monitor className="h-4 w-4 mr-2" />
                 Sistema
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-2">
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={user?.user_metadata?.avatar_url} />
+                  <AvatarFallback>
+                    {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || 
+                     user?.email?.charAt(0).toUpperCase() || '?'}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="hidden sm:inline text-sm">
+                  {user?.user_metadata?.full_name || 'Usuário'}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <div className="flex items-center gap-2 p-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user?.user_metadata?.avatar_url} />
+                  <AvatarFallback>
+                    {user?.user_metadata?.full_name?.charAt(0).toUpperCase() || 
+                     user?.email?.charAt(0).toUpperCase() || '?'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium">
+                    {user?.user_metadata?.full_name || 'Usuário'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {user?.email}
+                  </p>
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => go('settings')}>
+                <User className="h-4 w-4 mr-2" />
+                Configurações
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={signOut}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
