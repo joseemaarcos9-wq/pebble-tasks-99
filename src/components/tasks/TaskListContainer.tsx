@@ -1,6 +1,6 @@
 import { TaskList } from './TaskList';
-import { EmptyState } from './EmptyState';
-import { TaskDialog } from './TaskDialog';
+
+
 import { useData } from '@/components/providers/DataProvider';
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -179,12 +179,13 @@ export function TaskListContainer() {
             </div>
           )}
           
-          <EmptyState onCreateTask={() => setIsTaskDialogOpen(true)} />
-          
-          <TaskDialog
-            isOpen={isTaskDialogOpen}
-            onClose={() => setIsTaskDialogOpen(false)}
-          />
+          <div className="text-center text-muted-foreground py-8">
+            <p>Nenhuma tarefa encontrada</p>
+            <Button onClick={() => setIsTaskDialogOpen(true)} className="mt-4">
+              <Plus className="h-4 w-4 mr-2" />
+              Criar primeira tarefa
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -246,11 +247,6 @@ export function TaskListContainer() {
             <TaskList />
           </div>
         </div>
-        
-        <TaskDialog
-          isOpen={isTaskDialogOpen}
-          onClose={() => setIsTaskDialogOpen(false)}
-        />
       </div>
     </div>
   );

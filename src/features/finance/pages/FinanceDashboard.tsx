@@ -15,7 +15,7 @@ import { formatCurrency } from '../utils/formatters';
 import { useUiStore } from '@/features/ui/store';
 import { UpcomingRecurrences } from '@/components/finance/UpcomingRecurrences';
 import { FinanceStatsCards } from '@/components/finance/FinanceStatsCards';
-import { RecurrenceGenerator } from '@/components/finance/RecurrenceGenerator';
+
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 
 export function FinanceDashboard() {
@@ -205,9 +205,8 @@ export function FinanceDashboard() {
         </Card>
 
         {/* Próximas Recorrências */}
-        <div className="space-y-6">
+        <div>
           <UpcomingRecurrences maxItems={3} />
-          <RecurrenceGenerator compact />
         </div>
       </div>
     </div>

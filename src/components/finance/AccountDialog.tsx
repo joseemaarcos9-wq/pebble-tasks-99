@@ -69,13 +69,14 @@ export function AccountDialog({ open, onOpenChange }: AccountDialogProps) {
     },
   });
 
-  const onSubmit = (values: AccountFormValues) => {
-    addAccount({
+  const onSubmit = async (values: AccountFormValues) => {
+    await addAccount({
       nome: values.nome,
       tipo: values.tipo,
       saldo_inicial: values.saldoInicial,
+      arquivada: false,
       cor: selectedColor,
-      moeda: 'BRL',
+      moeda: "BRL",
     });
 
     form.reset();

@@ -3,7 +3,7 @@ import { ArrowLeft, Moon, Sun, Monitor, LogOut, User } from 'lucide-react';
 import { useUiStore, Section } from '@/features/ui/store';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { useTheme } from '@/hooks/useTheme';
+
 import { useWorkspaceKeyboardShortcuts } from '@/hooks/useWorkspaceKeyboardShortcuts';
 import { useData } from '@/components/providers/DataProvider';
 import { useAuth } from '@/hooks/useAuth';
@@ -33,7 +33,7 @@ const sectionTitles: Record<Section, string> = {
 
 export function WorkspaceTopbar() {
   const { section, history, back, go } = useUiStore();
-  const { theme, setTheme } = useTheme();
+  const [theme, setTheme] = useState<'light' | 'dark' | 'auto'>('auto');
   const { keySequence } = useWorkspaceKeyboardShortcuts();
   const { tasks: { getFilteredTasks, filters } } = useData();
   const { user, signOut } = useAuth();

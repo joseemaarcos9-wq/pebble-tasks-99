@@ -1,16 +1,12 @@
 import { useState } from 'react';
 import { useData } from '@/components/providers/DataProvider';
 import { TaskItem } from './TaskItem';
-import { TaskDialog } from './TaskDialog';
-import { TaskViewDialog } from './TaskViewDialog';
-import { EmptyState } from './EmptyState';
-import { KanbanView } from './KanbanView';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { List, Columns } from 'lucide-react';
 import { Task } from '@/hooks/useTasks';
-import { adaptTaskToOld } from '@/utils/taskAdapters';
+
 import { format, isToday, isPast, isTomorrow, isThisWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -145,23 +141,13 @@ export function TaskList() {
           </TabsContent>
           
           <TabsContent value="kanban" className="mt-6">
-            <KanbanView onViewTask={(task: any) => handleViewTask(task)} />
+            <div className="text-center text-muted-foreground py-8">
+              Vista Kanban em desenvolvimento
+            </div>
           </TabsContent>
         </Tabs>
       </div>
 
-      <TaskDialog
-        isOpen={isTaskDialogOpen}
-        onClose={handleCloseDialog}
-        task={editingTask ? adaptTaskToOld(editingTask) : undefined}
-      />
-      
-      <TaskViewDialog
-        isOpen={isTaskViewOpen}
-        onClose={handleCloseViewDialog}
-        onEdit={handleEditFromView}
-        task={viewingTask ? adaptTaskToOld(viewingTask) : undefined}
-      />
     </>
   );
 }

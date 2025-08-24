@@ -3,9 +3,6 @@ import { useUiStore } from '@/features/ui/store';
 import { TasksHome } from '@/features/tasks/pages/TasksHome';
 import { FinanceDashboard } from '@/features/finance/pages/FinanceDashboard';
 import { TransactionsPage } from '@/features/finance/pages/TransactionsPage';
-import { FinanceBudgets } from '@/features/finance/pages/FinanceBudgets';
-import { FinanceRecurring } from '@/features/finance/pages/FinanceRecurring';
-import { FinanceAccounts } from '@/features/finance/pages/FinanceAccounts';
 import Settings from '@/pages/Settings';
 
 export function SectionRenderer() {
@@ -20,11 +17,9 @@ export function SectionRenderer() {
       case 'finance.transactions':
         return <TransactionsPage />;
       case 'finance.budgets':
-        return <FinanceBudgets />;
       case 'finance.recurring':
-        return <FinanceRecurring />;
       case 'finance.accounts':
-        return <FinanceAccounts />;
+        return <div className="p-6 text-center text-muted-foreground">Seção em desenvolvimento</div>;
       case 'settings':
         return <Settings />;
       default:

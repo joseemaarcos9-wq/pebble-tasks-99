@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useData } from '@/components/providers/DataProvider';
 import { ListDialog } from './ListDialog';
-import { CustomViewDialog } from './CustomViewDialog';
+
 import { 
   Inbox, 
   Calendar, 
@@ -495,11 +495,6 @@ export function TaskSidebar() {
         editingListId={editingList}
       />
       
-      <CustomViewDialog
-        isOpen={isCustomViewDialogOpen}
-        onClose={handleCloseCustomViewDialog}
-        editingViewId={editingCustomView}
-      />
     </Sidebar>
   );
 }

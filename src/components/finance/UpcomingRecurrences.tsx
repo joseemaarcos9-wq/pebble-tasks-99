@@ -19,21 +19,21 @@ export function UpcomingRecurrences({
   showHeader = true,
   className = "" 
 }: UpcomingRecurrencesProps) {
+  const { finance } = useData();
   const { 
     recurrences, 
     accounts, 
-    categories,
-    generateRecurrenceTransactions 
-  } = useFinanceStore();
+    categories
+  } = finance;
   const { go } = useUiStore();
 
   // Obter recorrências ativas ordenadas por proximidade da data
   const activeRecurrences = recurrences
     .filter(r => r.ativo)
     .map(recurrence => {
-      const nextDate = new Date(recurrence.proximaOcorrencia);
-      const account = accounts.find(a => a.id === recurrence.contaId);
-      const category = categories.find(c => c.id === recurrence.categoriaId);
+      const nextDate = new Date(recurrence.proxima_ocorrencia);
+      const account = accounts.find(a => a.id === recurrence.conta_id);
+      const category = categories.find(c => c.id === recurrence.categoria_id);
       
       return {
         ...recurrence,
@@ -68,9 +68,7 @@ export function UpcomingRecurrences({
     return 'outline';
   };
 
-  const handleGenerate = (recurrenceId: string) => {
-    generateRecurrenceTransactions(recurrenceId, 1);
-  };
+  // Remove generateRecurrenceTransactions since it's not implemented yet
 
   if (activeRecurrences.length === 0) {
     return (
@@ -161,8 +159,8 @@ export function UpcomingRecurrences({
                 variant="ghost"
                 size="sm"
                 className="h-8 w-16 text-xs hover:bg-accent/10"
-                onClick={() => handleGenerate(recurrence.id)}
-                title="Gerar transação agora"
+                disabled
+                title="Funcionalidade em desenvolvimento"
               >
                 Gerar
               </Button>
