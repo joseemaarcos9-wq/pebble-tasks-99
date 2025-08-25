@@ -46,7 +46,7 @@ export interface FinanceTransaction {
   anexo_url: string | null;
   status: 'pendente' | 'compensada';
   data: string;
-  meta: any;
+  meta: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -116,7 +116,7 @@ export function useFinance() {
   const [loading, setLoading] = useState(true);
 
   // Fetch all data
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     if (!user) {
       setAccounts([]);
       setCategories([]);
@@ -159,17 +159,18 @@ export function useFinance() {
       setTransactions(transactionsResult.data || []);
       setRecurrences((recurrencesResult.data || []) as FinanceRecurrence[]);
       setBudgets(budgetsResult.data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching finance data:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: "Erro ao carregar dados financeiros",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   // Account operations
   const addAccount = useCallback(async (accountData: Omit<FinanceAccount, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
@@ -194,10 +195,11 @@ export function useFinance() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: "Erro ao criar conta",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
       return { error };
@@ -222,10 +224,11 @@ export function useFinance() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: "Erro ao atualizar conta",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
       return { error };
@@ -255,10 +258,11 @@ export function useFinance() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: "Erro ao criar transação",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
       return { error };
@@ -283,10 +287,11 @@ export function useFinance() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: "Erro ao atualizar transação",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
       return { error };
@@ -309,10 +314,11 @@ export function useFinance() {
       });
 
       return { error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: "Erro ao excluir transação",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
       return { error };
@@ -342,10 +348,11 @@ export function useFinance() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: "Erro ao criar categoria",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
       return { error };
@@ -375,10 +382,11 @@ export function useFinance() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       toast({
         title: "Erro ao criar orçamento",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
       return { error };
@@ -448,20 +456,22 @@ export function useFinance() {
         switch (filters.period) {
           case 'today':
             return transactionDate.toDateString() === today.toDateString();
-          case 'this-week':
+          case 'this-week': {
             const weekStart = new Date(today);
             weekStart.setDate(today.getDate() - today.getDay());
             const weekEnd = new Date(weekStart);
             weekEnd.setDate(weekStart.getDate() + 6);
             return transactionDate >= weekStart && transactionDate <= weekEnd;
+          }
           case 'this-month':
             return transactionDate.getMonth() === today.getMonth() && 
                    transactionDate.getFullYear() === today.getFullYear();
-          case 'last-month':
+          case 'last-month': {
             const lastMonth = new Date(today);
             lastMonth.setMonth(today.getMonth() - 1);
             return transactionDate.getMonth() === lastMonth.getMonth() && 
                    transactionDate.getFullYear() === lastMonth.getFullYear();
+          }
           default:
             return true;
         }
@@ -478,7 +488,7 @@ export function useFinance() {
 
     // Sort
     filtered.sort((a, b) => {
-      let aValue: any, bValue: any;
+      let aValue: string | number | Date, bValue: string | number | Date;
       
       switch (filters.sortBy) {
         case 'data':
@@ -516,7 +526,7 @@ export function useFinance() {
   // Load data on mount and user change
   useEffect(() => {
     fetchAllData();
-  }, [user]);
+  }, [user, fetchAllData]);
 
   // Setup realtime subscriptions
   useEffect(() => {
@@ -553,7 +563,7 @@ export function useFinance() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, fetchAllData]);
 
   return {
     // Data

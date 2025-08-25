@@ -7,10 +7,10 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName?: string) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName?: string) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
-  updateProfile: (data: { full_name?: string; avatar_url?: string }) => Promise<{ error: any }>;
+  updateProfile: (data: { full_name?: string; avatar_url?: string }) => Promise<{ error: Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -90,7 +90,7 @@ export function useAuthProvider() {
       }
 
       return { error };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro inesperado",
         description: "Tente novamente mais tarde.",
@@ -116,7 +116,7 @@ export function useAuthProvider() {
       }
 
       return { error };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro inesperado",
         description: "Tente novamente mais tarde.",
@@ -136,7 +136,7 @@ export function useAuthProvider() {
           variant: "destructive",
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro inesperado",
         description: "Tente novamente mais tarde.",
@@ -170,7 +170,7 @@ export function useAuthProvider() {
       }
 
       return { error };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro inesperado",
         description: "Tente novamente mais tarde.",

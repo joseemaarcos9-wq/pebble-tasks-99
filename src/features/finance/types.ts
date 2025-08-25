@@ -130,7 +130,7 @@ export interface FinanceState {
 export interface FinanceHistoryEntry {
   action: string;
   timestamp: Date;
-  data: any;
+  data: Record<string, unknown>;
 }
 
 // Computed types

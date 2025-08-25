@@ -1,5 +1,5 @@
-import { QuickActions } from '@/components/QuickActions';
 import { TaskListContainer } from '@/components/tasks/TaskListContainer';
+import { QuickActions } from '@/components/QuickActions';
 
 export function TasksHome() {
   return (

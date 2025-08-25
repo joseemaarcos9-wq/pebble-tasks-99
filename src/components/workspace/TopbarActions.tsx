@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
-import { Settings } from 'lucide-react';
+import { Settings, Download } from 'lucide-react';
 import { useUiStore } from '@/features/ui/store';
+import { DataExportDialog } from '@/features/export/components/DataExportDialog';
 
 interface TopbarActionsProps {
   searchValue: string;
@@ -14,6 +15,15 @@ export function TopbarActions({ searchValue, onSearchChange, onCommandOpen, onNe
 
   return (
     <div className="flex items-center gap-2">
+      <DataExportDialog 
+        trigger={
+          <Button variant="ghost" size="sm" className="gap-2">
+            <Download className="h-4 w-4" />
+            Exportar
+          </Button>
+        }
+      />
+      
       <Button
         variant="ghost"
         size="sm"

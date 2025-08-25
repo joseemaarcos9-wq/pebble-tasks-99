@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { WorkspaceShell } from "./components/workspace/WorkspaceShell";
 import { AuthProvider } from "./components/auth/AuthProvider";
 import { DataProvider } from "./components/providers/DataProvider";
+import { NotificationProvider } from "./components/providers/NotificationProvider";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
@@ -16,7 +17,8 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <DataProvider>
-        <TooltipProvider>
+        <NotificationProvider>
+          <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -36,7 +38,8 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
-        </TooltipProvider>
+          </TooltipProvider>
+        </NotificationProvider>
       </DataProvider>
     </AuthProvider>
   </QueryClientProvider>

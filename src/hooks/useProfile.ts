@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
@@ -18,7 +18,7 @@ export function useProfile() {
   const [loading, setLoading] = useState(true);
 
   // Fetch profile
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     if (!user) {
       setProfile(null);
       setLoading(false);
@@ -47,7 +47,7 @@ export function useProfile() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   // Update profile
   const updateProfile = async (updates: Partial<Pick<Profile, 'full_name' | 'avatar_url' | 'timezone'>>) => {
@@ -77,7 +77,7 @@ export function useProfile() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro inesperado",
         description: "Tente novamente mais tarde.",
@@ -89,7 +89,7 @@ export function useProfile() {
 
   useEffect(() => {
     fetchProfile();
-  }, [user]);
+  }, [user, fetchProfile]);
 
   // Setup realtime subscription
   useEffect(() => {

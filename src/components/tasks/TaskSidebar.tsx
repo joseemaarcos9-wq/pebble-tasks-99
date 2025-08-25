@@ -142,7 +142,7 @@ export function TaskSidebar() {
 
   // Helper function to get icon component
   const getIconComponent = (iconName: string) => {
-    const iconMap: Record<string, any> = {
+    const iconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
       Calendar,
       CheckSquare,
       Clock,

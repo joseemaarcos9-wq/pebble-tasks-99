@@ -20,6 +20,7 @@ export interface Task {
   description: string | null;
   priority: 'baixa' | 'media' | 'alta' | 'urgente';
   status: 'pendente' | 'concluida';
+  kanban_status: 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
   tags: string[];
   due_date: string | null;
   completed_at: string | null;
@@ -43,7 +44,7 @@ export interface CustomView {
   name: string;
   icon: string;
   color: string | null;
-  filters: any;
+  filters: TaskFilters;
   created_at: string;
 }
 
@@ -72,7 +73,7 @@ export function useTasks() {
   const [loading, setLoading] = useState(true);
 
   // Fetch all data
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     if (!user) {
       setTasks([]);
       setLists([]);
@@ -100,17 +101,17 @@ export function useTasks() {
       setLists(listsResult.data || []);
       setSubtasks(subtasksResult.data || []);
       setCustomViews(viewsResult.data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching tasks data:', error);
       toast({
         title: "Erro ao carregar dados",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   // Task CRUD operations
   const addTask = useCallback(async (taskData: Omit<Task, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
@@ -135,10 +136,10 @@ export function useTasks() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao criar tarefa",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -163,10 +164,10 @@ export function useTasks() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao atualizar tarefa",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -192,10 +193,10 @@ export function useTasks() {
       });
 
       return { error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao excluir tarefa",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -239,10 +240,10 @@ export function useTasks() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao criar lista",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
     return { error };
@@ -262,10 +263,10 @@ export function useTasks() {
 
       setLists(prev => prev.map(list => list.id === id ? data : list));
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao atualizar lista",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -291,10 +292,10 @@ export function useTasks() {
       });
 
       return { error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao excluir lista",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -312,7 +313,7 @@ export function useTasks() {
           name,
           icon,
           color,
-          filters: filters as any, // Cast to any for JSONB compatibility
+          filters: filters as Record<string, unknown>, // Cast for JSONB compatibility
           user_id: user.id,
         })
         .select()
@@ -327,10 +328,10 @@ export function useTasks() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao criar visualização",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -355,10 +356,10 @@ export function useTasks() {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao atualizar visualização",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -381,10 +382,10 @@ export function useTasks() {
       });
 
       return { error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao excluir visualização",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -407,10 +408,10 @@ export function useTasks() {
 
       setSubtasks(prev => [...prev, data]);
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao criar subtarefa",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -433,10 +434,10 @@ export function useTasks() {
 
       setSubtasks(prev => prev.map(s => s.id === subtaskId ? data : s));
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao atualizar subtarefa",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -454,10 +455,10 @@ export function useTasks() {
 
       setSubtasks(prev => prev.filter(s => s.id !== subtaskId));
       return { error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Erro ao remover subtarefa",
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
         variant: "destructive",
       });
       return { error };
@@ -509,10 +510,11 @@ export function useTasks() {
             return dueDate.toDateString() === today.toDateString();
           case 'overdue':
             return dueDate < today;
-          case 'week':
+          case 'week': {
             const weekFromNow = new Date(today);
             weekFromNow.setDate(weekFromNow.getDate() + 7);
             return dueDate >= today && dueDate <= weekFromNow;
+          }
           default:
             return true;
         }
@@ -555,6 +557,33 @@ export function useTasks() {
     return { completed, total, percentage };
   }, [tasks]);
 
+  const getSubtasksByTaskId = useCallback((taskId: string) => {
+    return subtasks.filter(subtask => subtask.task_id === taskId);
+  }, [subtasks]);
+
+  const updateSubtask = useCallback(async (subtaskId: string, updates: Partial<Subtask>) => {
+    try {
+      const { data, error } = await supabase
+        .from('subtasks')
+        .update(updates)
+        .eq('id', subtaskId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setSubtasks(prev => prev.map(s => s.id === subtaskId ? data : s));
+      return { data, error: null };
+    } catch (error: unknown) {
+      toast({
+        title: "Erro ao atualizar subtarefa",
+        description: error instanceof Error ? error.message : 'Erro desconhecido',
+        variant: "destructive",
+      });
+      return { error };
+    }
+  }, []);
+
   // Filters management
   const setFilters = useCallback((newFilters: Partial<TaskFilters>) => {
     setFiltersState(prev => ({ ...prev, ...newFilters }));
@@ -567,7 +596,7 @@ export function useTasks() {
   // Load data on mount and user change
   useEffect(() => {
     fetchAllData();
-  }, [user]);
+  }, [user, fetchAllData]);
 
   // Setup realtime subscriptions
   useEffect(() => {
@@ -605,7 +634,7 @@ export function useTasks() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, fetchAllData]);
 
   return {
     // Data
@@ -642,6 +671,7 @@ export function useTasks() {
     getTasksByList,
     getAllTags,
     getTaskProgress,
+    getSubtasksByTaskId,
 
     // Filter operations
     setFilters,
@@ -649,5 +679,6 @@ export function useTasks() {
 
     // Utilities
     refetch: fetchAllData,
+    updateSubtask,
   };
 }

@@ -26,9 +26,11 @@ const sectionTitles: Record<Section, string> = {
   'tasks.detail': 'Detalhes da Tarefa',
   'finance.dashboard': 'Dashboard Financeiro',
   'finance.transactions': 'Transações',
+  'finance.accounts': 'Contas',
+  'finance.categories': 'Categorias',
   'finance.budgets': 'Orçamentos',
   'finance.recurring': 'Recorrências',
-  'finance.accounts': 'Contas',
+  'finance.reports': 'Relatórios',
   'settings': 'Configurações'
 };
 

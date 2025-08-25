@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { useTasks } from '@/hooks/useTasks';
 import { useFinance } from '@/hooks/useFinance';
 import { useProfile } from '@/hooks/useProfile';
@@ -23,14 +23,20 @@ interface DataProviderProps {
   children: React.ReactNode;
 }
 
-export function DataProvider({ children }: DataProviderProps) {
+export const DataProvider = React.memo(function DataProvider({ children }: DataProviderProps) {
   const tasks = useTasks();
   const finance = useFinance();
   const profile = useProfile();
 
+  const contextValue = useMemo(() => ({
+    tasks,
+    finance,
+    profile
+  }), [tasks, finance, profile]);
+
   return (
-    <DataContext.Provider value={{ tasks, finance, profile }}>
+    <DataContext.Provider value={contextValue}>
       {children}
     </DataContext.Provider>
   );
-}
+});

@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 import { useData } from '@/components/providers/DataProvider';
+import { TaskDialog } from '@/components/tasks/TaskDialog';
 import { useState } from 'react';
 
 interface SimpleTransactionDialogProps {
@@ -127,6 +128,12 @@ export function QuickActions() {
       <SimpleTransactionDialog
         isOpen={showTransactionDialog}
         onClose={() => setShowTransactionDialog(false)}
+      />
+      
+      <TaskDialog
+        open={showTaskDialog}
+        onOpenChange={setShowTaskDialog}
+        mode="create"
       />
     </>
   );

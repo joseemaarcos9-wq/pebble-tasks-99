@@ -18,6 +18,8 @@ import {
   PiggyBank,
   Repeat,
   Settings,
+  BarChart3,
+  FolderOpen,
 } from 'lucide-react';
 
 export function WorkspaceSidebar() {
@@ -35,6 +37,16 @@ export function WorkspaceSidebar() {
       section: "finance.transactions" as const,
     },
     {
+      title: "Contas",
+      icon: CreditCard,
+      section: "finance.accounts" as const,
+    },
+    {
+      title: "Categorias",
+      icon: FolderOpen,
+      section: "finance.categories" as const,
+    },
+    {
       title: "Orçamentos",
       icon: PiggyBank,
       section: "finance.budgets" as const,
@@ -45,9 +57,9 @@ export function WorkspaceSidebar() {
       section: "finance.recurring" as const,
     },
     {
-      title: "Contas",
-      icon: CreditCard,
-      section: "finance.accounts" as const,
+      title: "Relatórios",
+      icon: BarChart3,
+      section: "finance.reports" as const,
     },
   ];
 

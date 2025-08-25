@@ -38,7 +38,7 @@ export type CustomView = {
   name: string;
   icon: string;
   color?: string;
-  filters: any;
+  filters: Record<string, unknown>;
   created_at: string;
 };
 
@@ -84,7 +84,7 @@ export type FinanceTransaction = {
   descricao?: string;
   tags?: string;
   anexo_url?: string;
-  meta?: any;
+  meta?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 };
@@ -121,7 +121,7 @@ export type FinanceFilterPreset = {
   id: string;
   user_id: string;
   name: string;
-  filters: any;
+  filters: Record<string, unknown>;
   created_at: string;
 };
 

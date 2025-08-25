@@ -62,8 +62,8 @@ export function useKeyboardShortcuts({
         case '/':
           event.preventDefault();
           // Usar a função global de foco se disponível
-          if ((window as any).focusSearch) {
-            (window as any).focusSearch();
+          if ((window as Record<string, unknown>).focusSearch) {
+            ((window as Record<string, unknown>).focusSearch as () => void)();
           } else {
             onSearch?.();
           }
@@ -76,11 +76,12 @@ export function useKeyboardShortcuts({
         case '6':
         case '7':
         case '8':
-        case '9':
+        case '9': {
           event.preventDefault();
           const index = parseInt(event.key) - 1;
           onToggleList?.(index);
           break;
+        }
         case 'escape':
           // Limpa foco de elementos
           (document.activeElement as HTMLElement)?.blur();

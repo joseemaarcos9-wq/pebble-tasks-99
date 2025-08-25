@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useUiStore } from '@/features/ui/store';
 
 interface KeySequence {
@@ -12,7 +12,7 @@ export function useWorkspaceKeyboardShortcuts() {
   const [keySequence, setKeySequence] = useState<string[]>([]);
   const [sequenceTimeout, setSequenceTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  const shortcuts: KeySequence[] = [
+  const shortcuts: KeySequence[] = useMemo(() => [
     {
       keys: ['g', 't'],
       action: () => go('tasks.home'),
@@ -53,7 +53,7 @@ export function useWorkspaceKeyboardShortcuts() {
       action: () => go('settings'),
       description: 'Ir para Configurações'
     }
-  ];
+  ], [go]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

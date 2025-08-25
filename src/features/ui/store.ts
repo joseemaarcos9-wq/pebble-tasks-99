@@ -13,11 +13,11 @@ export type Section =
 
 interface UiState {
   section: Section;
-  sectionParams?: Record<string, any> | null;
-  history: Array<{ section: Section; params?: any }>;
+  sectionParams?: Record<string, unknown> | null;
+  history: Array<{ section: Section; params?: Record<string, unknown> }>;
   
   // Actions
-  go: (section: Section, params?: any, pushHistory?: boolean) => void;
+  go: (section: Section, params?: Record<string, unknown>, pushHistory?: boolean) => void;
   back: () => void;
   reset: () => void;
 }

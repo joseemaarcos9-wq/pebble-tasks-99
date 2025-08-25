@@ -1,8 +1,15 @@
 import { motion } from 'framer-motion';
 import { useUiStore } from '@/features/ui/store';
 import { TasksHome } from '@/features/tasks/pages/TasksHome';
-import { FinanceDashboard } from '@/features/finance/pages/FinanceDashboard';
-import { TransactionsPage } from '@/features/finance/pages/TransactionsPage';
+import { 
+  FinanceDashboard,
+  FinanceAccounts,
+  FinanceCategories,
+  FinanceBudgets,
+  FinanceRecurring,
+  FinanceTransactions,
+  FinanceReports
+} from '@/features/finance/pages';
 import Settings from '@/pages/Settings';
 
 export function SectionRenderer() {
@@ -15,11 +22,17 @@ export function SectionRenderer() {
       case 'finance.dashboard':
         return <FinanceDashboard />;
       case 'finance.transactions':
-        return <TransactionsPage />;
-      case 'finance.budgets':
-      case 'finance.recurring':
+        return <FinanceTransactions />;
       case 'finance.accounts':
-        return <div className="p-6 text-center text-muted-foreground">Seção em desenvolvimento</div>;
+        return <FinanceAccounts />;
+      case 'finance.categories':
+        return <FinanceCategories />;
+      case 'finance.budgets':
+        return <FinanceBudgets />;
+      case 'finance.recurring':
+        return <FinanceRecurring />;
+      case 'finance.reports':
+        return <FinanceReports />;
       case 'settings':
         return <Settings />;
       default:
