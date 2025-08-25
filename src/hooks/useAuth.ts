@@ -91,12 +91,13 @@ export function useAuthProvider() {
 
       return { error };
     } catch (error: unknown) {
+      const errorObj = error instanceof Error ? error : new Error('Erro inesperado');
       toast({
         title: "Erro inesperado",
         description: "Tente novamente mais tarde.",
         variant: "destructive",
       });
-      return { error };
+      return { error: errorObj };
     }
   };
 
@@ -117,12 +118,13 @@ export function useAuthProvider() {
 
       return { error };
     } catch (error: unknown) {
+      const errorObj = error instanceof Error ? error : new Error('Erro inesperado');
       toast({
         title: "Erro inesperado",
         description: "Tente novamente mais tarde.",
         variant: "destructive",
       });
-      return { error };
+      return { error: errorObj };
     }
   };
 
@@ -148,7 +150,7 @@ export function useAuthProvider() {
   const updateProfile = async (data: { full_name?: string; avatar_url?: string }) => {
     try {
       if (!user) {
-        return { error: { message: 'Usuário não autenticado' } };
+        return { error: new Error('Usuário não autenticado') };
       }
 
       const { error } = await supabase
@@ -171,12 +173,13 @@ export function useAuthProvider() {
 
       return { error };
     } catch (error: unknown) {
+      const errorObj = error instanceof Error ? error : new Error('Erro inesperado');
       toast({
         title: "Erro inesperado",
         description: "Tente novamente mais tarde.",
         variant: "destructive",
       });
-      return { error };
+      return { error: errorObj };
     }
   };
 

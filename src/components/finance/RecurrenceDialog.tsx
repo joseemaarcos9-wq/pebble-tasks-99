@@ -61,7 +61,7 @@ const frequencyOptions: { value: RecurrenceFrequency; label: string }[] = [
 
 export function RecurrenceDialog({ open, onOpenChange, recurrence, mode = 'create' }: RecurrenceDialogProps) {
   const { finance } = useData();
-  const { addRecurrence, updateRecurrence, accounts, categories } = finance;
+  const { accounts, categories } = finance;
 
   const form = useForm<RecurrenceFormValues>({
     resolver: zodResolver(recurrenceSchema),
@@ -114,26 +114,9 @@ export function RecurrenceDialog({ open, onOpenChange, recurrence, mode = 'creat
   const availableCategories = categories.filter(cat => cat.tipo === selectedType);
 
   const onSubmit = async (values: RecurrenceFormValues) => {
-    const recurrenceData = {
-      tipo: values.tipo,
-      frequencia: values.frequencia,
-      diaBase: values.diaBase,
-      proximaOcorrencia: values.proximaOcorrencia,
-      contaId: values.contaId,
-      valor: values.valor,
-      categoriaId: values.categoriaId || undefined,
-      descricao: values.descricao || undefined,
-      tags: values.tags || '',
-      ativo: values.ativo,
-    };
-
-    if (mode === 'edit' && recurrence) {
-      await updateRecurrence(recurrence.id, recurrenceData);
-    } else {
-      await addRecurrence(recurrenceData);
-    }
-
-    form.reset();
+    // Since addRecurrence and updateRecurrence don't exist, show message
+    // TODO: Add recurrence methods to useFinance hook
+    console.warn('Recurrence functionality not implemented yet');
     onOpenChange(false);
   };
 

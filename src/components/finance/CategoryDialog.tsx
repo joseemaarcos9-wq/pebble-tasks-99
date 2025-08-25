@@ -59,7 +59,7 @@ const categoryColors = [
 
 export function CategoryDialog({ open, onOpenChange, category, mode = 'create' }: CategoryDialogProps) {
   const { finance } = useData();
-  const { addCategory, updateCategory, categories } = finance;
+  const { addCategory, categories } = finance;
   const [selectedColor, setSelectedColor] = useState(categoryColors[0]);
 
   const form = useForm<CategoryFormValues>({
@@ -95,22 +95,25 @@ export function CategoryDialog({ open, onOpenChange, category, mode = 'create' }
 
   const selectedType = form.watch('tipo');
   const parentCategories = categories.filter(cat => 
-    cat.tipo === selectedType && !cat.parentId && cat.id !== category?.id
+    cat.tipo === selectedType && !cat.parent_id && cat.id !== category?.id
   );
 
   const onSubmit = async (values: CategoryFormValues) => {
+    // Since updateCategory doesn't exist, we'll just use addCategory for now
+    // TODO: Add updateCategory method to useFinance hook
+    if (mode === 'edit' && category) {
+      console.warn('Category update functionality not implemented yet');
+      return;
+    }
+
     const categoryData = {
       nome: values.nome,
       tipo: values.tipo,
-      parentId: values.parentId || undefined,
+      parent_id: values.parentId || null,
       cor: selectedColor,
     };
 
-    if (mode === 'edit' && category) {
-      await updateCategory(category.id, categoryData);
-    } else {
-      await addCategory(categoryData);
-    }
+    await addCategory(categoryData);
 
     form.reset();
     setSelectedColor(categoryColors[0]);

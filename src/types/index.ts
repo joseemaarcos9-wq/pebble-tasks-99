@@ -7,6 +7,7 @@ export type Task = {
   description?: string;
   status: 'pendente' | 'concluida';
   priority: 'baixa' | 'media' | 'alta' | 'urgente';
+  kanban_status: 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
   tags: string[];
   due_date?: string;
   completed_at?: string;

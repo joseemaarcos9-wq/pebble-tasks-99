@@ -9,6 +9,8 @@ export type Section =
   | 'finance.budgets'
   | 'finance.recurring'
   | 'finance.accounts'
+  | 'finance.categories'
+  | 'finance.reports'
   | 'settings';
 
 interface UiState {

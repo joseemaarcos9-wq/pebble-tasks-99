@@ -24,6 +24,7 @@ export function SimpleTaskDialog({ isOpen, onClose }: SimpleTaskDialogProps) {
       list_id: defaultList.id,
       status: 'pendente',
       priority: 'media',
+      kanban_status: 'backlog',
       description: null,
       tags: [],
       due_date: null,
