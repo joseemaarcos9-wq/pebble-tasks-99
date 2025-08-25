@@ -70,7 +70,8 @@ interface TaskDialogProps {
 }
 
 export function TaskDialog({ open, onOpenChange, task, mode = 'create' }: TaskDialogProps) {
-  const { tasks: { addTask, updateTask, lists, addSubtask, updateSubtask, deleteSubtask, getSubtasksByTaskId } } = useData();
+  const { tasks } = useData();
+  const { addTask, updateTask, lists, addSubtask, updateSubtask, removeSubtask, getSubtasksByTaskId } = tasks;
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [subtasks, setSubtasks] = useState<Subtask[]>([]);
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
@@ -151,7 +152,19 @@ export function TaskDialog({ open, onOpenChange, task, mode = 'create' }: TaskDi
 
     try {
       if (mode === 'edit' && task) {
-        const result = await updateTask(task.id, taskData);
+        const result = await updateTask(task.id, {
+          title: data.title,
+          description: data.description || null,
+          status: data.status,
+          priority: data.priority,
+          kanban_status: data.kanban_status,
+          list_id: data.list_id,
+          due_date: data.due_date || null,
+          completed_at: data.status === 'concluida' ? new Date().toISOString() : null,
+          link: data.link || null,
+          tags: selectedTags,
+          photos: photos,
+        });
         
         if (result?.error) {
           throw new Error(result.error.message || 'Erro ao atualizar tarefa');
@@ -160,11 +173,7 @@ export function TaskDialog({ open, onOpenChange, task, mode = 'create' }: TaskDi
         // Add new subtasks (those with temporary IDs) in edit mode
         for (const subtask of subtasks) {
           if (subtask.id.startsWith('temp-')) {
-            await addSubtask({
-              task_id: task.id,
-              title: subtask.title,
-              completed: subtask.completed,
-            });
+            await addSubtask(task.id, subtask.title);
           }
         }
         
@@ -173,7 +182,19 @@ export function TaskDialog({ open, onOpenChange, task, mode = 'create' }: TaskDi
           description: "As alterações foram salvas com sucesso.",
         });
       } else {
-        const result = await addTask(taskData);
+        const result = await addTask({
+          title: data.title,
+          description: data.description || null,
+          status: data.status,
+          priority: data.priority,
+          kanban_status: data.kanban_status,
+          list_id: data.list_id,
+          due_date: data.due_date || null,
+          completed_at: data.status === 'concluida' ? new Date().toISOString() : null,
+          link: data.link || null,
+          tags: selectedTags,
+          photos: photos,
+        });
         if (result?.error) {
           throw new Error(result.error.message || 'Erro ao criar tarefa');
         }
@@ -181,11 +202,7 @@ export function TaskDialog({ open, onOpenChange, task, mode = 'create' }: TaskDi
         if (result?.data) {
           // Add subtasks after creating the task
           for (const subtask of subtasks) {
-            await addSubtask({
-              task_id: result.data.id,
-              title: subtask.title,
-              completed: subtask.completed,
-            });
+            await addSubtask(result.data.id, subtask.title);
           }
         }
         
@@ -253,9 +270,9 @@ export function TaskDialog({ open, onOpenChange, task, mode = 'create' }: TaskDi
     setSubtasks(subtasks.map(s => s.id === subtaskId ? updatedSubtask : s));
   };
 
-  const removeSubtask = async (subtaskId: string) => {
+  const removeSubtaskFromList = async (subtaskId: string) => {
     if (mode === 'edit' && task && !subtaskId.startsWith('temp-')) {
-      await deleteSubtask(subtaskId);
+      await removeSubtask(task.id, subtaskId);
     }
     setSubtasks(subtasks.filter(s => s.id !== subtaskId));
   };
@@ -526,7 +543,7 @@ export function TaskDialog({ open, onOpenChange, task, mode = 'create' }: TaskDi
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => removeSubtask(subtask.id)}
+                      onClick={() => removeSubtaskFromList(subtask.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

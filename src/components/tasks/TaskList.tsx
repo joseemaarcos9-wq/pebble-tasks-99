@@ -38,7 +38,7 @@ interface TaskListProps {
 }
 
 export function TaskList({ tasks, onTaskEdit, onTaskView }: TaskListProps) {
-  const { tasks: { updateTask, deleteTask, createTask } } = useData();
+  const { tasks: { updateTask, deleteTask, addTask } } = useData();
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -126,7 +126,7 @@ export function TaskList({ tasks, onTaskEdit, onTaskView }: TaskListProps) {
   const handleTaskStatusChange = useCallback(async (taskId: string, status: string) => {
     try {
       await updateTask(taskId, { 
-        status,
+        status: status as 'pendente' | 'concluida',
         completed_at: status === 'concluida' ? new Date().toISOString() : null
       });
     } catch (error) {
@@ -406,29 +406,18 @@ export function TaskList({ tasks, onTaskEdit, onTaskView }: TaskListProps) {
        )}
 
       {/* Diálogos */}
-       <TaskDialog
-         open={taskDialogOpen}
-         onOpenChange={setTaskDialogOpen}
-         task={selectedTask}
-         onSave={() => {
-           setTaskDialogOpen(false);
-           setSelectedTask(null);
-         }}
-       />
+        <TaskDialog
+          open={taskDialogOpen}
+          onOpenChange={setTaskDialogOpen}
+          task={selectedTask}
+          mode={selectedTask ? 'edit' : 'create'}
+        />
 
-       <TaskDetailView
-         open={taskDetailOpen}
-         onOpenChange={setTaskDetailOpen}
-         task={selectedTask}
-         onEdit={(task) => {
-           setTaskDetailOpen(false);
-           handleTaskEdit(task);
-         }}
-         onDelete={(taskId) => {
-           setTaskDetailOpen(false);
-           handleTaskDelete(taskId);
-         }}
-       />
+        <TaskDetailView
+          open={taskDetailOpen}
+          onOpenChange={setTaskDetailOpen}
+          task={selectedTask}
+        />
 
      </div>
    );

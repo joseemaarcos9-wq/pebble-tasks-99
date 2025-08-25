@@ -96,11 +96,7 @@ export function TaskDetailView({ open, onOpenChange, task }: TaskDetailViewProps
   const handleAddSubtask = async () => {
     if (!newSubtaskTitle.trim()) return;
     
-    await addSubtask({
-      task_id: task.id,
-      title: newSubtaskTitle.trim(),
-      completed: false,
-    });
+    await addSubtask(task.id, newSubtaskTitle.trim());
     
     setNewSubtaskTitle('');
   };

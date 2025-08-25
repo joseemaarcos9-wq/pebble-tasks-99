@@ -30,7 +30,6 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useData } from '@/components/providers/DataProvider';
-import { Transaction, TransactionType, TransactionStatus } from '@/features/finance/types';
 import { useToast } from '@/hooks/use-toast';
 import { CalendarIcon, X } from 'lucide-react';
 import { format } from 'date-fns';
@@ -41,13 +40,11 @@ const transactionSchema = z.object({
   tipo: z.enum(['receita', 'despesa', 'transferencia'] as const),
   valor: z.number().min(0.01, 'Valor deve ser maior que zero'),
   contaId: z.string().min(1, 'Conta é obrigatória'),
-  contaDestinoId: z.string().optional(),
   categoriaId: z.string().optional(),
   descricao: z.string().optional(),
   data: z.date(),
-  status: z.enum(['pendente', 'confirmada', 'cancelada'] as const),
+  status: z.enum(['pendente', 'compensada'] as const),
   tags: z.string().optional(),
-  observacoes: z.string().optional(),
 });
 
 type TransactionFormData = z.infer<typeof transactionSchema>;
@@ -55,9 +52,9 @@ type TransactionFormData = z.infer<typeof transactionSchema>;
 interface TransactionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  transaction?: Transaction | null;
+  transaction?: any | null;
   mode: 'create' | 'edit';
-  defaultType?: TransactionType;
+  defaultType?: 'despesa' | 'receita' | 'transferencia';
   defaultAccount?: string;
 }
 
@@ -81,13 +78,11 @@ export function TransactionDialog({
       tipo: defaultType,
       valor: 0,
       contaId: defaultAccount || '',
-      contaDestinoId: '',
       categoriaId: '',
       descricao: '',
       data: new Date(),
-      status: 'confirmada',
+      status: 'pendente',
       tags: '',
-      observacoes: '',
     },
   });
 
@@ -98,14 +93,12 @@ export function TransactionDialog({
       form.reset({
         tipo: transaction.tipo,
         valor: transaction.valor,
-        contaId: transaction.contaId,
-        contaDestinoId: transaction.contaDestinoId || '',
-        categoriaId: transaction.categoriaId || '',
+        contaId: transaction.contaId || transaction.conta_id,
+        categoriaId: transaction.categoriaId || transaction.categoria_id || '',
         descricao: transaction.descricao || '',
         data: new Date(transaction.data),
-        status: transaction.status,
+        status: 'pendente' as const,
         tags: transaction.tags || '',
-        observacoes: transaction.observacoes || '',
       });
       if (transaction.tags) {
         setTags(transaction.tags.split(',').map(tag => tag.trim()));
@@ -115,13 +108,11 @@ export function TransactionDialog({
         tipo: defaultType,
         valor: 0,
         contaId: defaultAccount || '',
-        contaDestinoId: '',
         categoriaId: '',
         descricao: '',
         data: new Date(),
-        status: 'confirmada',
+        status: 'pendente' as const,
         tags: '',
-        observacoes: '',
       });
       setTags([]);
     }
@@ -131,9 +122,16 @@ export function TransactionDialog({
     setIsSubmitting(true);
     try {
       const transactionData = {
-        ...data,
+        conta_id: data.contaId,
+        categoria_id: data.categoriaId || null,
+        tipo: data.tipo,
+        valor: data.valor,
+        descricao: data.descricao || null,
+        status: 'pendente' as const,
+        data: data.data.toISOString().split('T')[0],
         tags: tags.join(', '),
-        data: data.data.toISOString(),
+        anexo_url: null,
+        meta: {},
       };
 
       if (mode === 'edit' && transaction) {
@@ -184,12 +182,6 @@ export function TransactionDialog({
     return categories.filter(cat => cat.tipo === watchedType);
   };
 
-  const getAvailableAccounts = (isDestination = false) => {
-    if (!isDestination) return accounts;
-    const sourceAccountId = form.watch('contaId');
-    return accounts.filter(acc => acc.id !== sourceAccountId);
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
@@ -208,7 +200,7 @@ export function TransactionDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Tipo</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o tipo" />
@@ -246,23 +238,54 @@ export function TransactionDialog({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="contaId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Conta</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a conta" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {accounts.map((account) => (
+                        <SelectItem key={account.id} value={account.id}>
+                          {account.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+              
+            {watchedType !== 'transferencia' && (
               <FormField
                 control={form.control}
-                name="contaId"
+                name="categoriaId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Conta {watchedType === 'transferencia' ? 'Origem' : ''}</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormLabel>Categoria</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione a conta" />
+                          <SelectValue placeholder="Selecione a categoria" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {getAvailableAccounts().map((account) => (
-                          <SelectItem key={account.id} value={account.id}>
-                            {account.nome}
+                        {getFilteredCategories().map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className="w-3 h-3 rounded-full" 
+                                style={{ backgroundColor: category.cor || '#6B7280' }}
+                              />
+                              {category.nome}
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -271,67 +294,7 @@ export function TransactionDialog({
                   </FormItem>
                 )}
               />
-              
-              {watchedType === 'transferencia' && (
-                <FormField
-                  control={form.control}
-                  name="contaDestinoId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Conta Destino</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione a conta destino" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {getAvailableAccounts(true).map((account) => (
-                            <SelectItem key={account.id} value={account.id}>
-                              {account.nome}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              
-              {watchedType !== 'transferencia' && (
-                <FormField
-                  control={form.control}
-                  name="categoriaId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Categoria</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione a categoria" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {getFilteredCategories().map((category) => (
-                            <SelectItem key={category.id} value={category.id}>
-                              <div className="flex items-center gap-2">
-                                <div 
-                                  className="w-3 h-3 rounded-full" 
-                                  style={{ backgroundColor: category.cor }}
-                                />
-                                {category.nome}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-            </div>
+            )}
 
             <FormField
               control={form.control}
@@ -396,7 +359,7 @@ export function TransactionDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione o status" />
@@ -404,8 +367,7 @@ export function TransactionDialog({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="pendente">Pendente</SelectItem>
-                        <SelectItem value="confirmada">Confirmada</SelectItem>
-                        <SelectItem value="cancelada">Cancelada</SelectItem>
+                        <SelectItem value="compensada">Compensada</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -442,24 +404,6 @@ export function TransactionDialog({
                 </div>
               )}
             </div>
-
-            <FormField
-              control={form.control}
-              name="observacoes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Observações</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Observações adicionais"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <div className="flex justify-end space-x-2 pt-4">
               <Button

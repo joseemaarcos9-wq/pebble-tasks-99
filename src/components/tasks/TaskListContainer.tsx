@@ -60,7 +60,7 @@ export function TaskListContainer() {
       {/* Task Dialog */}
       <TaskDialog
         open={taskDialogOpen}
-        onClose={handleTaskDialogClose}
+        onOpenChange={handleTaskDialogClose}
         task={selectedTask}
         mode={selectedTask ? 'edit' : 'create'}
       />
