@@ -15,7 +15,7 @@ import { Plus, MoreHorizontal, Edit, Trash2, TrendingUp, TrendingDown } from 'lu
 import { useToast } from '@/hooks/use-toast';
 
 export function FinanceCategories() {
-  const { finance: { categories, deleteCategory, loading } } = useData();
+  const { finance: { categories, loading } } = useData();
   const { toast } = useToast();
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -35,19 +35,11 @@ export function FinanceCategories() {
 
   const handleDeleteCategory = async (category: Category) => {
     if (confirm(`Tem certeza que deseja excluir a categoria "${category.nome}"?`)) {
-      try {
-        await deleteCategory(category.id);
-        toast({
-          title: "Categoria excluída",
-          description: `A categoria "${category.nome}" foi excluída com sucesso.`,
-        });
-      } catch (error) {
-        toast({
-          title: "Erro ao excluir categoria",
-          description: "Não foi possível excluir a categoria. Tente novamente.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Funcionalidade não implementada",
+        description: "A exclusão de categorias será implementada em breve.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -69,11 +61,11 @@ export function FinanceCategories() {
 
   const expenseCategories = categories.filter(cat => cat.tipo === 'despesa');
   const incomeCategories = categories.filter(cat => cat.tipo === 'receita');
-  const parentCategories = categories.filter(cat => !cat.parentId);
-  const childCategories = categories.filter(cat => cat.parentId);
+  const parentCategories = categories.filter(cat => !cat.parent_id);
+  const childCategories = categories.filter(cat => cat.parent_id);
 
   const getCategoryChildren = (parentId: string) => {
-    return childCategories.filter(cat => cat.parentId === parentId);
+    return childCategories.filter(cat => cat.parent_id === parentId);
   };
 
   const CategoryCard = ({ category }: { category: Category }) => {
@@ -149,12 +141,12 @@ export function FinanceCategories() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleEditCategory(child)}>
+                      <DropdownMenuItem onClick={() => handleEditCategory(child as any)}>
                         <Edit className="h-4 w-4 mr-2" />
                         Editar
                       </DropdownMenuItem>
                       <DropdownMenuItem 
-                        onClick={() => handleDeleteCategory(child)}
+                        onClick={() => handleDeleteCategory(child as any)}
                         className="text-destructive"
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
@@ -239,7 +231,7 @@ export function FinanceCategories() {
         ) : (
           <div className="grid gap-4">
             {parentCategories.map((category) => (
-              <CategoryCard key={category.id} category={category} />
+              <CategoryCard key={category.id} category={category as any} />
             ))}
           </div>
         )}

@@ -177,7 +177,7 @@ export function DataExportDialog({ trigger, defaultFields }: DataExportDialogPro
               <Checkbox
                 id="dateFilter"
                 checked={useDateFilter}
-                onCheckedChange={setUseDateFilter}
+                onCheckedChange={(checked) => setUseDateFilter(checked as boolean)}
               />
               <Label htmlFor="dateFilter" className="text-base font-medium cursor-pointer">
                 Filtrar por período

@@ -25,17 +25,17 @@ export interface ExportableData {
 export function useDataExport() {
   const [isExporting, setIsExporting] = useState(false);
   const { success, error } = useNotification();
-  const { tasks, transactions, categories, accounts, budgets, recurrences } = useData();
+  const { tasks, finance } = useData();
   const { user } = useAuth();
 
   const getAllData = (): ExportableData => {
     return {
-      tasks: tasks || [],
-      transactions: transactions || [],
-      categories: categories || [],
-      accounts: accounts || [],
-      budgets: budgets || [],
-      recurrences: recurrences || []
+      tasks: (tasks?.tasks || []) as unknown as Record<string, unknown>[],
+      transactions: (finance?.transactions || []) as unknown as Record<string, unknown>[],
+      categories: (finance?.categories || []) as unknown as Record<string, unknown>[],
+      accounts: (finance?.accounts || []) as unknown as Record<string, unknown>[],
+      budgets: (finance?.budgets || []) as unknown as Record<string, unknown>[],
+      recurrences: (finance?.recurrences || []) as unknown as Record<string, unknown>[]
     };
   };
 
@@ -43,7 +43,7 @@ export function useDataExport() {
     if (!dateRange) return data;
     
     return data.filter(item => {
-      const itemDate = new Date(item.created_at || item.date || item.due_date);
+      const itemDate = new Date((item.created_at || item.data || item.due_date) as string);
       return itemDate >= dateRange.start && itemDate <= dateRange.end;
     });
   };

@@ -19,7 +19,7 @@ import { format, parseISO, addDays, addWeeks, addMonths, addYears } from 'date-f
 import { ptBR } from 'date-fns/locale';
 
 export function FinanceRecurring() {
-  const { finance: { recurrences, accounts, categories, deleteRecurrence, updateRecurrence, loading } } = useData();
+  const { finance: { recurrences, accounts, categories, loading } } = useData();
   const { toast } = useToast();
   const [isRecurrenceDialogOpen, setIsRecurrenceDialogOpen] = useState(false);
   const [selectedRecurrence, setSelectedRecurrence] = useState<Recurrence | null>(null);
@@ -31,47 +31,28 @@ export function FinanceRecurring() {
     setIsRecurrenceDialogOpen(true);
   };
 
-  const handleEditRecurrence = (recurrence: Recurrence) => {
+  const handleEditRecurrence = (recurrence: any) => {
     setSelectedRecurrence(recurrence);
     setDialogMode('edit');
     setIsRecurrenceDialogOpen(true);
   };
 
-  const handleDeleteRecurrence = async (recurrence: Recurrence) => {
+  const handleDeleteRecurrence = async (recurrence: any) => {
     if (confirm(`Tem certeza que deseja excluir a recorrência "${recurrence.descricao || 'Sem descrição'}"?`)) {
-      try {
-        await deleteRecurrence(recurrence.id);
-        toast({
-          title: "Recorrência excluída",
-          description: "A recorrência foi excluída com sucesso.",
-        });
-      } catch (error) {
-        toast({
-          title: "Erro ao excluir recorrência",
-          description: "Não foi possível excluir a recorrência. Tente novamente.",
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
-  const handleToggleActive = async (recurrence: Recurrence) => {
-    try {
-      await updateRecurrence(recurrence.id, {
-        ...recurrence,
-        ativo: !recurrence.ativo
-      });
       toast({
-        title: recurrence.ativo ? "Recorrência pausada" : "Recorrência ativada",
-        description: `A recorrência foi ${recurrence.ativo ? 'pausada' : 'ativada'} com sucesso.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Erro ao alterar status",
-        description: "Não foi possível alterar o status da recorrência.",
+        title: "Funcionalidade não implementada",
+        description: "A exclusão de recorrências será implementada em breve.",
         variant: "destructive",
       });
     }
+  };
+
+  const handleToggleActive = async (recurrence: any) => {
+    toast({
+      title: "Funcionalidade não implementada",
+      description: "A alteração de status de recorrências será implementada em breve.",
+      variant: "destructive",
+    });
   };
 
   const handleDialogClose = () => {
@@ -106,13 +87,13 @@ export function FinanceRecurring() {
     return labels[frequency as keyof typeof labels] || frequency;
   };
 
-  const getNextOccurrence = (recurrence: Recurrence) => {
-    const nextDate = parseISO(recurrence.proximaOcorrencia);
+  const getNextOccurrence = (recurrence: any) => {
+    const nextDate = parseISO(recurrence.proxima_ocorrencia);
     return format(nextDate, 'dd/MM/yyyy', { locale: ptBR });
   };
 
-  const getDaysUntilNext = (recurrence: Recurrence) => {
-    const nextDate = parseISO(recurrence.proximaOcorrencia);
+  const getDaysUntilNext = (recurrence: any) => {
+    const nextDate = parseISO(recurrence.proxima_ocorrencia);
     const today = new Date();
     const diffTime = nextDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -229,7 +210,7 @@ export function FinanceRecurring() {
               const Icon = recurrence.tipo === 'receita' ? TrendingUp : TrendingDown;
               
               return (
-                <Card key={`upcoming-${recurrence.id}`} className="border-l-4" style={{ borderLeftColor: getCategoryColor(recurrence.categoriaId) }}>
+                <Card key={`upcoming-${recurrence.id}`} className="border-l-4" style={{ borderLeftColor: getCategoryColor(recurrence.categoria_id) }}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -238,10 +219,10 @@ export function FinanceRecurring() {
                         }`} />
                         <div>
                           <h3 className="font-medium">
-                            {recurrence.descricao || getCategoryName(recurrence.categoriaId)}
+                            {recurrence.descricao || getCategoryName(recurrence.categoria_id)}
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            {getAccountName(recurrence.contaId)} • {getNextOccurrence(recurrence)}
+                            {getAccountName(recurrence.conta_id)} • {getNextOccurrence(recurrence)}
                           </p>
                         </div>
                       </div>
@@ -293,17 +274,17 @@ export function FinanceRecurring() {
                       <div className="flex items-center gap-3">
                         <div 
                           className="w-4 h-4 rounded-full" 
-                          style={{ backgroundColor: getCategoryColor(recurrence.categoriaId) }}
+                          style={{ backgroundColor: getCategoryColor(recurrence.categoria_id) }}
                         />
                         <Icon className={`h-5 w-5 ${
                           recurrence.tipo === 'receita' ? 'text-green-500' : 'text-red-500'
                         }`} />
                         <div>
                           <h3 className="font-medium">
-                            {recurrence.descricao || getCategoryName(recurrence.categoriaId)}
+                            {recurrence.descricao || getCategoryName(recurrence.categoria_id)}
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            {getAccountName(recurrence.contaId)} • {getFrequencyLabel(recurrence.frequencia)} • 
+                            {getAccountName(recurrence.conta_id)} • {getFrequencyLabel(recurrence.frequencia)} • 
                             Próxima: {getNextOccurrence(recurrence)}
                           </p>
                           {recurrence.tags && (

@@ -17,7 +17,7 @@ import { Plus, MoreHorizontal, Edit, Trash2, AlertTriangle, CheckCircle, XCircle
 import { useToast } from '@/hooks/use-toast';
 
 export function FinanceBudgets() {
-  const { finance: { budgets, categories, transactions, deleteBudget, loading } } = useData();
+  const { finance: { budgets, categories, transactions, loading } } = useData();
   const { toast } = useToast();
   const [isBudgetDialogOpen, setIsBudgetDialogOpen] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState<Budget | null>(null);
@@ -35,22 +35,14 @@ export function FinanceBudgets() {
     setIsBudgetDialogOpen(true);
   };
 
-  const handleDeleteBudget = async (budget: Budget) => {
-    const categoryName = getCategoryName(budget.categoriaId);
+  const handleDeleteBudget = async (budget: any) => {
+    const categoryName = getCategoryName(budget.categoria_id);
     if (confirm(`Tem certeza que deseja excluir o orçamento para "${categoryName}"?`)) {
-      try {
-        await deleteBudget(budget.id);
-        toast({
-          title: "Orçamento excluído",
-          description: `O orçamento para "${categoryName}" foi excluído com sucesso.`,
-        });
-      } catch (error) {
-        toast({
-          title: "Erro ao excluir orçamento",
-          description: "Não foi possível excluir o orçamento. Tente novamente.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Funcionalidade não implementada",
+        description: "A exclusão de orçamentos será implementada em breve.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -69,8 +61,8 @@ export function FinanceBudgets() {
     return category?.cor || '#6B7280';
   };
 
-  const getBudgetSpent = (budget: Budget) => {
-    const [year, month] = budget.mesAno.split('-');
+  const getBudgetSpent = (budget: any) => {
+    const [year, month] = budget.mes_ano.split('-');
     const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
     const endDate = new Date(parseInt(year), parseInt(month), 0);
     
@@ -78,7 +70,7 @@ export function FinanceBudgets() {
       .filter(transaction => {
         const transactionDate = new Date(transaction.data);
         return (
-          transaction.categoriaId === budget.categoriaId &&
+          transaction.categoria_id === budget.categoria_id &&
           transaction.tipo === 'despesa' &&
           transaction.status === 'compensada' &&
           transactionDate >= startDate &&
@@ -88,11 +80,11 @@ export function FinanceBudgets() {
       .reduce((total, transaction) => total + transaction.valor, 0);
   };
 
-  const getBudgetStatus = (budget: Budget, spent: number) => {
-    const percentage = (spent / budget.valorPlanejado) * 100;
+  const getBudgetStatus = (budget: any, spent: number) => {
+    const percentage = (spent / budget.valor_planejado) * 100;
     
     if (percentage >= 100) return 'exceeded';
-    if (percentage >= budget.alertThresholdPct) return 'warning';
+    if (percentage >= budget.alert_threshold_pct) return 'warning';
     return 'ok';
   };
 
@@ -115,8 +107,8 @@ export function FinanceBudgets() {
   };
 
   const currentMonth = new Date().toISOString().slice(0, 7);
-  const currentMonthBudgets = budgets.filter(budget => budget.mesAno === currentMonth);
-  const totalBudgeted = currentMonthBudgets.reduce((total, budget) => total + budget.valorPlanejado, 0);
+  const currentMonthBudgets = budgets.filter(budget => budget.mes_ano === currentMonth);
+  const totalBudgeted = currentMonthBudgets.reduce((total, budget) => total + budget.valor_planejado, 0);
   const totalSpent = currentMonthBudgets.reduce((total, budget) => total + getBudgetSpent(budget), 0);
   const budgetsExceeded = currentMonthBudgets.filter(budget => {
     const spent = getBudgetSpent(budget);
@@ -225,8 +217,8 @@ export function FinanceBudgets() {
             {budgets.map((budget) => {
               const spent = getBudgetSpent(budget);
               const status = getBudgetStatus(budget, spent);
-              const percentage = Math.min((spent / budget.valorPlanejado) * 100, 100);
-              const remaining = budget.valorPlanejado - spent;
+              const percentage = Math.min((spent / budget.valor_planejado) * 100, 100);
+              const remaining = budget.valor_planejado - spent;
               
               return (
                 <Card key={budget.id}>
@@ -235,12 +227,12 @@ export function FinanceBudgets() {
                       <div className="flex items-center gap-3">
                         <div 
                           className="w-4 h-4 rounded-full" 
-                          style={{ backgroundColor: getCategoryColor(budget.categoriaId) }}
+                          style={{ backgroundColor: getCategoryColor(budget.categoria_id) }}
                         />
                         <div>
-                          <h3 className="font-medium">{getCategoryName(budget.categoriaId)}</h3>
+                          <h3 className="font-medium">{getCategoryName(budget.categoria_id)}</h3>
                           <p className="text-sm text-muted-foreground">
-                            {budget.mesAno} • Alerta em {budget.alertThresholdPct}%
+                            {budget.mes_ano} • Alerta em {budget.alert_threshold_pct}%
                           </p>
                         </div>
                       </div>
@@ -254,7 +246,7 @@ export function FinanceBudgets() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditBudget(budget)}>
+                            <DropdownMenuItem onClick={() => handleEditBudget(budget as any)}>
                               <Edit className="h-4 w-4 mr-2" />
                               Editar
                             </DropdownMenuItem>
@@ -273,7 +265,7 @@ export function FinanceBudgets() {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Gasto: {formatCurrency(spent)}</span>
-                        <span>Orçamento: {formatCurrency(budget.valorPlanejado)}</span>
+                        <span>Orçamento: {formatCurrency(budget.valor_planejado)}</span>
                       </div>
                       <Progress 
                         value={percentage} 
