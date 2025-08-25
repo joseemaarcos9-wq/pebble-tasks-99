@@ -211,12 +211,13 @@ export function TaskList({ tasks, onTaskEdit, onTaskView }: TaskListProps) {
     return groups;
   }, [filteredTasks]);
   
-  const handleTaskEdit = (task: Task) => {
-    setEditingTask(task);
-    setIsTaskDialogOpen(true);
-  };
+  const handleTaskEdit = useCallback((task: Task) => {
+    console.log('handleTaskEdit called with task:', task.title);
+    setSelectedTask(task);
+    setTaskDialogOpen(true);
+  }, []);
 
-  const handleViewTask = (task: Task) => {
+  const handleTaskView = (task: Task) => {
     setViewingTask(task);
     setIsTaskViewOpen(true);
   };

@@ -13,7 +13,10 @@ import {
   Calendar, 
   Paperclip,
   Plus,
-  Clock
+  Clock,
+  Eye,
+  Edit,
+  Trash2
 } from 'lucide-react';
 import { Task } from '@/hooks/useTasks';
 import { format } from 'date-fns';
@@ -120,7 +123,7 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
       onDragEnd={handleDragEnd}
     >
       <CardContent className="p-4">
-        {/* Header com prioridade */}
+        {/* Header com prioridade e ações */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
             <div 
@@ -128,38 +131,58 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
               title={`Prioridade: ${task.priority}`}
             />
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-100"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreHorizontal className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-32">
-              <DropdownMenuItem 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onTaskEdit(task);
-                }}
-                className="text-xs"
-              >
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onTaskDelete(task.id);
-                }}
-                className="text-xs text-red-600"
-              >
-                Excluir
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-6 w-6 p-0 hover:bg-blue-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log('View clicked for task:', task.title);
+                onTaskClick(task);
+              }}
+              title="Visualizar"
+            >
+              <Eye className="h-3 w-3 text-blue-600" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-6 w-6 p-0 hover:bg-orange-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log('Edit clicked for task:', task.title);
+                onTaskEdit(task);
+              }}
+              title="Editar"
+            >
+              <Edit className="h-3 w-3 text-orange-600" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 w-6 p-0 hover:bg-gray-100"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreHorizontal className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-32">
+                <DropdownMenuItem 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onTaskDelete(task.id);
+                  }}
+                  className="text-xs text-red-600"
+                >
+                  <Trash2 className="h-3 w-3 mr-2" />
+                  Excluir
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {/* Título */}
