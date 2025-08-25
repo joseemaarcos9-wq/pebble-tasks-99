@@ -156,7 +156,7 @@ export function useFinance() {
       setAccounts(accountsResult.data || []);
       setCategories(categoriesResult.data || []);
       setTags(tagsResult.data || []);
-      setTransactions(transactionsResult.data || []);
+      setTransactions((transactionsResult.data || []) as any);
       setRecurrences((recurrencesResult.data || []) as FinanceRecurrence[]);
       setBudgets(budgetsResult.data || []);
     } catch (error: unknown) {
@@ -243,15 +243,24 @@ export function useFinance() {
       const { data, error } = await supabase
         .from('finance_transactions')
         .insert({
-          ...transactionData,
           user_id: user.id,
+          tipo: transactionData.tipo,
+          conta_id: transactionData.conta_id,
+          categoria_id: transactionData.categoria_id,
+          valor: transactionData.valor,
+          descricao: transactionData.descricao,
+          tags: transactionData.tags,
+          anexo_url: transactionData.anexo_url,
+          status: transactionData.status,
+          data: transactionData.data,
+          meta: transactionData.meta as any,
         })
         .select()
         .single();
 
       if (error) throw error;
 
-      setTransactions(prev => [data, ...prev]);
+      setTransactions(prev => [data as any, ...prev]);
       toast({
         title: "Transação criada!",
         description: "A transação foi registrada com sucesso.",
@@ -273,14 +282,14 @@ export function useFinance() {
     try {
       const { data, error } = await supabase
         .from('finance_transactions')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
 
-      setTransactions(prev => prev.map(transaction => transaction.id === id ? data : transaction));
+      setTransactions(prev => prev.map(transaction => transaction.id === id ? data as any : transaction));
       toast({
         title: "Transação atualizada!",
         description: "As alterações foram salvas.",

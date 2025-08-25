@@ -62,8 +62,8 @@ export function useKeyboardShortcuts({
         case '/':
           event.preventDefault();
           // Usar a função global de foco se disponível
-          if ((window as Record<string, unknown>).focusSearch) {
-            ((window as Record<string, unknown>).focusSearch as () => void)();
+          if ((window as any).focusSearch) {
+            ((window as any).focusSearch as () => void)();
           } else {
             onSearch?.();
           }

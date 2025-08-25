@@ -97,10 +97,10 @@ export function useTasks() {
       if (subtasksResult.error) throw subtasksResult.error;
       if (viewsResult.error) throw viewsResult.error;
 
-      setTasks(tasksResult.data || []);
+      setTasks((tasksResult.data || []) as any);
       setLists(listsResult.data || []);
       setSubtasks(subtasksResult.data || []);
-      setCustomViews(viewsResult.data || []);
+      setCustomViews((viewsResult.data || []) as any);
     } catch (error: unknown) {
       console.error('Error fetching tasks data:', error);
       toast({
@@ -129,7 +129,7 @@ export function useTasks() {
 
       if (error) throw error;
 
-      setTasks(prev => [data, ...prev]);
+      setTasks(prev => [data as any, ...prev]);
       toast({
         title: "Tarefa criada!",
         description: `"${data.title}" foi adicionada à sua lista.`,
@@ -157,7 +157,7 @@ export function useTasks() {
 
       if (error) throw error;
 
-      setTasks(prev => prev.map(task => task.id === id ? data : task));
+      setTasks(prev => prev.map(task => task.id === id ? data as any : task));
       toast({
         title: "Tarefa atualizada!",
         description: "As alterações foram salvas.",
@@ -313,7 +313,7 @@ export function useTasks() {
           name,
           icon,
           color,
-          filters: filters as Record<string, unknown>, // Cast for JSONB compatibility
+          filters: filters as any, // Cast for JSONB compatibility
           user_id: user.id,
         })
         .select()
@@ -321,7 +321,7 @@ export function useTasks() {
 
       if (error) throw error;
 
-      setCustomViews(prev => [...prev, data]);
+      setCustomViews(prev => [...prev, data as any]);
       toast({
         title: "Visualização criada!",
         description: `"${data.name}" foi adicionada.`,
@@ -342,14 +342,14 @@ export function useTasks() {
     try {
       const { data, error } = await supabase
         .from('custom_views')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
 
-      setCustomViews(prev => prev.map(view => view.id === id ? data : view));
+      setCustomViews(prev => prev.map(view => view.id === id ? data as any : view));
       toast({
         title: "Visualização atualizada!",
         description: "As alterações foram salvas.",

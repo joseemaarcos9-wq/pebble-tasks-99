@@ -74,7 +74,7 @@ export default function UserSettings() {
     setIsLoading(true);
     try {
       await updateProfile({
-        display_name: profileData.displayName,
+        full_name: profileData.displayName,
         avatar_url: profileData.avatar
       });
       success('Perfil atualizado', 'Suas informações foram salvas com sucesso');
