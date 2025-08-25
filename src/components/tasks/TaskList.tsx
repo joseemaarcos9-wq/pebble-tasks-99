@@ -361,31 +361,31 @@ export function TaskList({ tasks, onTaskEdit, onTaskView }: TaskListProps) {
              />
            )}
 
-           {/* Tarefas sem Data */}
-           {groupedTasks.noDueDate.length > 0 && (
-             <TaskGroup
-               title="Sem Data de Vencimento"
-               tasks={groupedTasks.noDueDate}
-               color="text-gray-600"
-               bgColor="bg-gray-50"
-               onTaskToggle={handleTaskToggle}
-               onTaskEdit={handleTaskEdit}
-               onTaskView={handleTaskClick}
-             />
-           )}
+            {/* Tarefas sem Data */}
+            {groupedTasks.noDueDate.length > 0 && (
+              <TaskGroup
+                title="Sem Data de Vencimento"
+                tasks={groupedTasks.noDueDate}
+                color="text-muted-foreground"
+                bgColor="bg-muted"
+                onTaskToggle={handleTaskToggle}
+                onTaskEdit={handleTaskEdit}
+                onTaskView={handleTaskClick}
+              />
+            )}
 
-           {/* Outras Tarefas */}
-           {groupedTasks.others.length > 0 && (
-             <TaskGroup
-               title="Outras"
-               tasks={groupedTasks.others}
-               color="text-gray-600"
-               bgColor="bg-gray-50"
-               onTaskToggle={handleTaskToggle}
-               onTaskEdit={handleTaskEdit}
-               onTaskView={handleTaskClick}
-             />
-           )}
+            {/* Outras Tarefas */}
+            {groupedTasks.others.length > 0 && (
+              <TaskGroup
+                title="Outras"
+                tasks={groupedTasks.others}
+                color="text-muted-foreground"
+                bgColor="bg-muted"
+                onTaskToggle={handleTaskToggle}
+                onTaskEdit={handleTaskEdit}
+                onTaskView={handleTaskClick}
+              />
+            )}
 
            {filteredTasks.length === 0 && (
              <Card>
@@ -481,18 +481,18 @@ function TaskItem({
 }) {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgente': return 'text-red-600';
-      case 'alta': return 'text-orange-600';
-      case 'media': return 'text-yellow-600';
-      case 'baixa': return 'text-green-600';
-      default: return 'text-gray-600';
+      case 'urgente': return 'text-destructive';
+      case 'alta': return 'text-accent';
+      case 'media': return 'text-muted-foreground';
+      case 'baixa': return 'text-muted-foreground/60';
+      default: return 'text-muted-foreground';
     }
   };
 
   const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'concluida';
 
   return (
-    <div className="flex items-center gap-3 p-3 bg-white rounded-lg border hover:shadow-sm transition-shadow">
+    <div className="flex items-center gap-3 p-3 bg-card rounded-lg border hover:shadow-sm transition-shadow">
       <Checkbox
         checked={task.status === 'concluida'}
         onCheckedChange={(checked) => onToggle(task.id, !!checked)}

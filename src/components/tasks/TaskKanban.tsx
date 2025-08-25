@@ -114,8 +114,8 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
 
   return (
     <Card 
-      className={`group cursor-pointer bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 ${
-        isOverdue ? 'border-red-200 bg-red-50/30' : ''
+      className={`group cursor-pointer bg-card border border-border hover:border-accent/50 hover:shadow-md transition-all duration-200 ${
+        isOverdue ? 'border-destructive/30 bg-destructive/5' : ''
       }`}
       onClick={() => onTaskClick(task)}
       draggable
@@ -135,7 +135,7 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-6 w-6 p-0 hover:bg-blue-100"
+              className="h-6 w-6 p-0 hover:bg-accent-light dark:hover:bg-accent-dark"
               onClick={(e) => {
                 e.stopPropagation();
                 console.log('View clicked for task:', task.title);
@@ -143,12 +143,12 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
               }}
               title="Visualizar"
             >
-              <Eye className="h-3 w-3 text-blue-600" />
+              <Eye className="h-3 w-3 text-accent" />
             </Button>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-6 w-6 p-0 hover:bg-orange-100"
+              className="h-6 w-6 p-0 hover:bg-accent-light dark:hover:bg-accent-dark"
               onClick={(e) => {
                 e.stopPropagation();
                 console.log('Edit clicked for task:', task.title);
@@ -156,17 +156,17 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
               }}
               title="Editar"
             >
-              <Edit className="h-3 w-3 text-orange-600" />
+              <Edit className="h-3 w-3 text-accent" />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-6 w-6 p-0 hover:bg-gray-100"
+                  className="h-6 w-6 p-0 hover:bg-muted"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <MoreHorizontal className="h-3 w-3" />
+                  <MoreHorizontal className="h-3 w-3 text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-32">
@@ -186,13 +186,13 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
         </div>
 
         {/* Título */}
-        <h4 className="font-medium text-sm text-gray-900 mb-2 line-clamp-2">
+        <h4 className="font-medium text-sm text-card-foreground mb-2 line-clamp-2">
           {task.title}
         </h4>
 
         {/* Descrição */}
         {task.description && (
-          <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+          <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
             {task.description}
           </p>
         )}
@@ -204,7 +204,7 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
               <Badge 
                 key={index} 
                 variant="secondary" 
-                className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                className="text-xs px-2 py-0.5"
               >
                 {tag}
               </Badge>
@@ -212,7 +212,7 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
             {task.tags.length > 2 && (
               <Badge 
                 variant="secondary" 
-                className="text-xs px-2 py-0.5 bg-gray-100 text-gray-700"
+                className="text-xs px-2 py-0.5"
               >
                 +{task.tags.length - 2}
               </Badge>
@@ -225,7 +225,7 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
           {/* Data de vencimento */}
           {task.due_date ? (
             <div className={`flex items-center gap-1.5 text-xs ${
-              isOverdue ? 'text-red-600' : 'text-gray-500'
+              isOverdue ? 'text-destructive' : 'text-muted-foreground'
             }`}>
               <Calendar className="h-3 w-3" />
               <span className="font-medium">
@@ -233,7 +233,7 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 text-xs text-gray-400">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground/60">
               <Clock className="h-3 w-3" />
               <span>Sem prazo</span>
             </div>
@@ -242,7 +242,7 @@ function TaskCard({ task, onTaskClick, onTaskEdit, onTaskDelete }: {
           {/* Link indicator */}
           {task.link && (
             <div className="flex items-center">
-              <Paperclip className="h-3 w-3 text-gray-400" />
+              <Paperclip className="h-3 w-3 text-muted-foreground/60" />
             </div>
           )}
         </div>
@@ -296,9 +296,9 @@ function KanbanColumn({
   };
 
   return (
-    <div className="flex flex-col w-80 bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="flex flex-col w-80 bg-card rounded-lg border border-border overflow-hidden">
       {/* Header da coluna */}
-      <div className={`${column.bgColor} px-4 py-3 border-b border-gray-200`}>
+      <div className={`${column.bgColor} px-4 py-3 border-b border-border`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h3 className={`font-semibold text-sm ${column.headerColor}`}>
@@ -308,8 +308,8 @@ function KanbanColumn({
               variant="secondary" 
               className={`text-xs font-medium ${
                 isOverLimit 
-                  ? 'bg-red-100 text-red-700 border-red-200' 
-                  : 'bg-white/70 text-gray-600 border-gray-300'
+                  ? 'bg-destructive/10 text-destructive border-destructive/20' 
+                  : ''
               }`}
             >
               {columnTasks.length}
@@ -319,14 +319,14 @@ function KanbanColumn({
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 w-6 p-0 hover:bg-white/50"
+            className="h-6 w-6 p-0 hover:bg-muted/50"
             onClick={() => onCreateTask(column.status)}
           >
             <Plus className="h-3 w-3" />
           </Button>
         </div>
         {column.limit && (
-          <div className="text-xs text-gray-500 mt-1">
+          <div className="text-xs text-muted-foreground mt-1">
             Limite: {column.limit} tarefas
           </div>
         )}
@@ -335,14 +335,14 @@ function KanbanColumn({
       {/* Lista de tarefas */}
       <div 
         className={`flex-1 p-3 space-y-3 min-h-96 max-h-[calc(100vh-200px)] overflow-y-auto ${
-          isDragOver ? 'bg-blue-50' : column.bgColor
+          isDragOver ? 'bg-accent/10' : column.bgColor
         } transition-colors duration-200`}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
       >
         {columnTasks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-32 text-gray-400">
+          <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
             <div className="text-2xl mb-2">📝</div>
             <p className="text-sm text-center mb-3">
               Nenhuma tarefa
@@ -350,7 +350,7 @@ function KanbanColumn({
             <Button
               variant="ghost"
               size="sm"
-              className="text-xs text-gray-500 hover:text-gray-700 hover:bg-white/50"
+              className="text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50"
               onClick={() => onCreateTask(column.status)}
             >
               <Plus className="h-3 w-3 mr-1" />
@@ -382,7 +382,7 @@ export function TaskKanban({
   onCreateTask,
 }: TaskKanbanProps) {
   return (
-    <div className="h-full bg-gray-50/30 p-6">
+    <div className="h-full bg-background p-6">
       <div className="flex gap-6 h-full overflow-x-auto pb-4">
         {KANBAN_COLUMNS.map((column) => (
           <KanbanColumn
