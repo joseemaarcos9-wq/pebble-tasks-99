@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { useData } from '@/components/providers/DataProvider';
 import { useTaskFilters } from '@/hooks/useTaskFilters';
 import { ListDialog } from './ListDialog';
+import { CustomViewDialog } from './CustomViewDialog';
 
 import { 
   Inbox, 
@@ -472,6 +473,12 @@ export function TaskSidebar() {
         isOpen={isListDialogOpen}
         onClose={handleCloseDialog}
         editingListId={editingList}
+      />
+      
+      <CustomViewDialog
+        isOpen={isCustomViewDialogOpen}
+        onClose={handleCloseCustomViewDialog}
+        editingViewId={editingCustomView}
       />
       
     </Sidebar>
