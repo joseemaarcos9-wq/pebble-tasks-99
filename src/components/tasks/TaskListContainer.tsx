@@ -5,6 +5,7 @@ import { TaskDialog } from './TaskDialog';
 import { TaskDetailView } from './TaskDetailView';
 
 import { useData } from '@/components/providers/DataProvider';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { X, Plus } from 'lucide-react';
@@ -17,6 +18,7 @@ import { Task } from '@/hooks/useTasks';
  */
 export function TaskListContainer() {
   const { tasks } = useData();
+  const { filters } = useTaskFilters();
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
@@ -52,7 +54,7 @@ export function TaskListContainer() {
   return (
     <div className="flex-1">
       <TaskList 
-        tasks={tasks.tasks}
+        tasks={tasks.getFilteredTasks(filters)}
         onTaskEdit={handleTaskEdit}
         onTaskView={handleTaskView}
       />

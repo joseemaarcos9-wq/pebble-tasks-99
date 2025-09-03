@@ -1,19 +1,21 @@
 import { useData } from '@/components/providers/DataProvider';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckSquare, Clock, AlertTriangle, CalendarDays } from 'lucide-react';
 
 export function TaskStats() {
-  const { tasks: { tasks, getFilteredTasks } } = useData();
+  const { tasks } = useData();
+  const { filters } = useTaskFilters();
   
-  const allTasks = getFilteredTasks();
+  const allTasks = tasks.getFilteredTasks(filters);
   const completedTasks = allTasks.filter(task => task.status === 'concluida');
   const pendingTasks = allTasks.filter(task => task.status === 'pendente');
   
   // Calculate overdue tasks
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const overdueTasks = tasks.filter(
+  const overdueTasks = tasks.tasks.filter(
     (task) =>
       task.status === 'pendente' &&
       task.due_date &&
@@ -21,7 +23,7 @@ export function TaskStats() {
   );
   
   // Calculate today tasks
-  const todayTasks = tasks.filter(
+  const todayTasks = tasks.tasks.filter(
     (task) =>
       task.status === 'pendente' &&
       task.due_date &&

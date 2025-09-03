@@ -7,6 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 
 import { useWorkspaceKeyboardShortcuts } from '@/hooks/useWorkspaceKeyboardShortcuts';
 import { useData } from '@/components/providers/DataProvider';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
 import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -38,7 +39,8 @@ export function WorkspaceTopbar() {
   const { section, history, back, go } = useUiStore();
   const { theme, setTheme } = useTheme();
   const { keySequence } = useWorkspaceKeyboardShortcuts();
-  const { tasks: { getFilteredTasks, filters } } = useData();
+  const { tasks } = useData();
+  const { filters } = useTaskFilters();
   const { user, signOut } = useAuth();
   const [commandOpen, setCommandOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -107,7 +109,7 @@ export function WorkspaceTopbar() {
   
   const getTaskCount = () => {
     if (section.startsWith('tasks')) {
-      return getFilteredTasks().length;
+      return tasks.getFilteredTasks(filters).length;
     }
     return null;
   };

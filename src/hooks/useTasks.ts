@@ -69,7 +69,6 @@ export function useTasks() {
   const [lists, setLists] = useState<TaskList[]>([]);
   const [subtasks, setSubtasks] = useState<Subtask[]>([]);
   const [customViews, setCustomViews] = useState<CustomView[]>([]);
-  const [filters, setFiltersState] = useState<TaskFilters>(defaultFilters);
   const [loading, setLoading] = useState(true);
 
   // Fetch all data
@@ -466,7 +465,7 @@ export function useTasks() {
   }, []);
 
   // Filtering and computed values
-  const getFilteredTasks = useCallback(() => {
+  const getFilteredTasks = useCallback((filters: TaskFilters) => {
     let filtered = [...tasks];
 
     // Filter by status
@@ -532,7 +531,7 @@ export function useTasks() {
     }
 
     return filtered;
-  }, [tasks, filters]);
+  }, [tasks]);
 
   const getTasksByList = useCallback((listId: string) => {
     return tasks.filter((task) => task.list_id === listId);
@@ -584,14 +583,6 @@ export function useTasks() {
     }
   }, []);
 
-  // Filters management
-  const setFilters = useCallback((newFilters: Partial<TaskFilters>) => {
-    setFiltersState(prev => ({ ...prev, ...newFilters }));
-  }, []);
-
-  const clearFilters = useCallback(() => {
-    setFiltersState(defaultFilters);
-  }, []);
 
   // Load data on mount and user change
   useEffect(() => {
@@ -642,7 +633,6 @@ export function useTasks() {
     lists,
     subtasks,
     customViews,
-    filters,
     loading,
 
     // Task operations
@@ -673,9 +663,6 @@ export function useTasks() {
     getTaskProgress,
     getSubtasksByTaskId,
 
-    // Filter operations
-    setFilters,
-    clearFilters,
 
     // Utilities
     refetch: fetchAllData,

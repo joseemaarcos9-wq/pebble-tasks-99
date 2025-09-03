@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useData } from '@/components/providers/DataProvider';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
 import { ListDialog } from './ListDialog';
 
 import { 
@@ -52,10 +53,9 @@ export function TaskSidebar() {
   const [isCustomViewDialogOpen, setIsCustomViewDialogOpen] = useState(false);
   const [editingList, setEditingList] = useState<string | null>(null);
   const [editingCustomView, setEditingCustomView] = useState<string | null>(null);
+  const { filters, updateFilters, clearFilters } = useTaskFilters();
   const { 
     tasks: {
-      filters, 
-      setFilters, 
       lists, 
       customViews,
       getTasksByList, 
@@ -101,7 +101,7 @@ export function TaskSidebar() {
   const isActive = (condition: boolean) => condition ? 'bg-accent text-accent-foreground' : '';
 
   const handleViewChange = (newFilters: Partial<typeof filters>) => {
-    setFilters({ ...filters, ...newFilters });
+    updateFilters(newFilters);
   };
 
   const handleEditList = (listId: string) => {
@@ -114,7 +114,7 @@ export function TaskSidebar() {
       deleteList(listId);
       // Se a lista excluída estava sendo filtrada, limpar o filtro
       if (filters.listId === listId) {
-        setFilters({ listId: undefined });
+        updateFilters({ listId: undefined });
       }
     }
   };
@@ -171,20 +171,20 @@ export function TaskSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  onClick={() => handleViewChange({ status: 'all', listId: undefined, dateRange: undefined })}
-                  className={isActive(!filters.listId && !filters.dateRange)}
-                >
-                  <Inbox className="h-4 w-4" />
-                  {!collapsed && (
-                    <>
-                      <span>Todas</span>
-                      <Badge variant="secondary" className="ml-auto text-xs">
-                        {getFilteredTasks().length}
-                      </Badge>
-                    </>
-                  )}
-                </SidebarMenuButton>
+                      <SidebarMenuButton 
+                        onClick={() => handleViewChange({ status: 'all', listId: undefined, dateRange: undefined })}
+                        className={isActive(!filters.listId && !filters.dateRange)}
+                      >
+                        <Inbox className="h-4 w-4" />
+                        {!collapsed && (
+                          <>
+                            <span>Todas</span>
+                            <Badge variant="secondary" className="ml-auto text-xs">
+                              {getFilteredTasks(filters).length}
+                            </Badge>
+                          </>
+                        )}
+                      </SidebarMenuButton>
               </SidebarMenuItem>
 
               {overdueTasks.length > 0 && (
@@ -266,34 +266,13 @@ export function TaskSidebar() {
             <SidebarMenu>
               {customViews.map((view) => {
                 const IconComponent = getIconComponent(view.icon);
-                const viewTasks = getFilteredTasks().filter(task => {
-                  // Apply the view's filters to get tasks count
-                  let matches = true;
-                  
-                  if (view.filters.status !== 'all') {
-                    matches = matches && (
-                      view.filters.status === 'pending' 
-                        ? task.status === 'pendente'
-                        : task.status === 'concluida'
-                    );
-                  }
-                  
-                  if (view.filters.listId) {
-                    matches = matches && task.list_id === view.filters.listId;
-                  }
-                  
-                  if (view.filters.priority) {
-                    matches = matches && task.priority === view.filters.priority;
-                  }
-                  
-                  return matches;
-                });
+                const viewTasks = getFilteredTasks(view.filters);
                 
                 return (
                   <SidebarMenuItem key={view.id}>
                     <div className="flex items-center group">
                       <SidebarMenuButton 
-                        onClick={() => setFilters(view.filters)}
+                        onClick={() => updateFilters(view.filters)}
                         className="flex-1"
                       >
                         <IconComponent 

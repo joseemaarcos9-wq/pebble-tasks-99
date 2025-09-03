@@ -2,30 +2,26 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useData } from '@/components/providers/DataProvider';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
 import { CalendarDays, AlertTriangle, Clock, List } from 'lucide-react';
 
 export function QuickFilters() {
-  const { 
-    tasks: {
-      filters, 
-      setFilters, 
-      tasks,
-      lists
-    }
-  } = useData();
+  const { tasks } = useData();
+  const { filters, updateFilters } = useTaskFilters();
+  const { tasks: tasksList, lists } = tasks;
   
   // Calculate quick filter counts
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
-  const overdueTasks = tasks.filter(
+  const overdueTasks = tasksList.filter(
     (task) =>
       task.status === 'pendente' &&
       task.due_date &&
       new Date(task.due_date) < today
   );
   
-  const todayTasks = tasks.filter(
+  const todayTasks = tasksList.filter(
     (task) =>
       task.status === 'pendente' &&
       task.due_date &&
@@ -35,7 +31,7 @@ export function QuickFilters() {
   const weekFromNow = new Date(today);
   weekFromNow.setDate(weekFromNow.getDate() + 7);
   
-  const weekTasks = tasks.filter(
+  const weekTasks = tasksList.filter(
     (task) =>
       task.status === 'pendente' &&
       task.due_date &&
@@ -59,7 +55,7 @@ export function QuickFilters() {
         <Select
           value={filters.listId || 'all'}
           onValueChange={(value) => 
-            setFilters({ listId: value === 'all' ? undefined : value })
+            updateFilters({ listId: value === 'all' ? undefined : value })
           }
         >
           <SelectTrigger className="w-[160px] h-8">
@@ -88,7 +84,7 @@ export function QuickFilters() {
           variant={filters.dateRange === 'overdue' ? 'default' : 'outline'}
           size="sm"
           onClick={() => 
-            setFilters({ 
+            updateFilters({ 
               dateRange: filters.dateRange === 'overdue' ? undefined : 'overdue' 
             })
           }
@@ -107,7 +103,7 @@ export function QuickFilters() {
           variant={filters.dateRange === 'today' ? 'default' : 'outline'}
           size="sm"
           onClick={() => 
-            setFilters({ 
+            updateFilters({ 
               dateRange: filters.dateRange === 'today' ? undefined : 'today' 
             })
           }
@@ -126,7 +122,7 @@ export function QuickFilters() {
           variant={filters.dateRange === 'week' ? 'default' : 'outline'}
           size="sm"
           onClick={() => 
-            setFilters({ 
+            updateFilters({ 
               dateRange: filters.dateRange === 'week' ? undefined : 'week' 
             })
           }
