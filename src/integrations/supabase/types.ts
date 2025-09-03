@@ -429,6 +429,7 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
+          kanban_status: Database["public"]["Enums"]["kanban_status"] | null
           link: string | null
           list_id: string
           photos: string[] | null
@@ -445,6 +446,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          kanban_status?: Database["public"]["Enums"]["kanban_status"] | null
           link?: string | null
           list_id: string
           photos?: string[] | null
@@ -461,6 +463,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          kanban_status?: Database["public"]["Enums"]["kanban_status"] | null
           link?: string | null
           list_id?: string
           photos?: string[] | null
@@ -494,6 +497,7 @@ export type Database = {
     Enums: {
       account_type: "carteira" | "banco" | "cartao"
       category_type: "despesa" | "receita"
+      kanban_status: "backlog" | "todo" | "in_progress" | "review" | "done"
       recurrence_frequency: "mensal" | "semanal" | "anual" | "custom"
       task_priority: "baixa" | "media" | "alta" | "urgente"
       task_status: "pendente" | "concluida"
@@ -628,6 +632,7 @@ export const Constants = {
     Enums: {
       account_type: ["carteira", "banco", "cartao"],
       category_type: ["despesa", "receita"],
+      kanban_status: ["backlog", "todo", "in_progress", "review", "done"],
       recurrence_frequency: ["mensal", "semanal", "anual", "custom"],
       task_priority: ["baixa", "media", "alta", "urgente"],
       task_status: ["pendente", "concluida"],
